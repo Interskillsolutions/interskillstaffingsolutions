@@ -1,6 +1,6 @@
 import React from 'react';
 import Logo from './Logo';
-import { MapPin, Phone, Mail, Clock } from 'lucide-react';
+import { MapPin, Phone, Mail } from 'lucide-react';
 import '../styles/footer.css';
 
 export default function Footer({ onNavigate }) {
@@ -172,19 +172,21 @@ export default function Footer({ onNavigate }) {
             <div className="footer-contact-list">
               <div className="footer-contact-item">
                 <MapPin size={16} className="footer-contact-icon" />
-                <span>503, Paradise Tower, Naupada, Thane West, near McDonald's.</span>
+                <span>104, Jaganath Tower, above Parijat Sweets, Opp Nerul Railway Station (West), Sector 20.</span>
               </div>
               <div className="footer-contact-item">
                 <Phone size={16} className="footer-contact-icon" />
-                <a href="tel:9819461050">9819461050</a>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                  <a href="tel:9819461050">9819461050</a>
+                  <a href="tel:8591207594">8591207594</a>
+                </div>
               </div>
               <div className="footer-contact-item">
                 <Mail size={16} className="footer-contact-icon" />
-                <a href="mailto:info@interskill.com">info@interskill.com</a>
-              </div>
-              <div className="footer-contact-item">
-                <Clock size={16} className="footer-contact-icon" />
-                <span>Mon – Sat: 9:00 AM – 6:00 PM</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                  <a href="mailto:shreyashhrinterskillsolutions@gmail.com">shreyashhrinterskillsolutions@gmail.com</a>
+                  <a href="mailto:interskillsolutions@gmail.com">interskillsolutions@gmail.com</a>
+                </div>
               </div>
             </div>
           </div>
