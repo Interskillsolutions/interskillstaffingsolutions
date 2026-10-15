@@ -1,12 +1,59 @@
 import React from 'react';
-import { ArrowRight, Sparkles } from 'lucide-react';
-import { advisors } from '../data/advisors';
+import { ArrowRight, Sparkles, UserCheck } from 'lucide-react';
+// import { advisors } from '../data/advisors';
+
+export const teamMembers = [
+  {
+    id: 'team-priya',
+    name: "Priya Ma'am",
+    role: 'CEO',
+    initials: 'PM',
+    bg: '#071D3A',
+    color: '#DDB568',
+  },
+  {
+    id: 'team-shreyash',
+    name: 'Shreyash Shirekar',
+    role: 'Talent Acquisition & Business Development',
+    initials: 'SS',
+    bg: '#092344',
+    color: '#FFFFFF',
+  },
+  {
+    id: 'team-sahil',
+    name: 'Sahil More',
+    role: 'Recruitment Specialist',
+    initials: 'SM',
+    bg: '#0F2F57',
+    color: '#FFFFFF',
+  },
+  {
+    id: 'team-priyanka',
+    name: 'Priyanka Guhagarkar',
+    role: 'Talent Acquisition Executive',
+    initials: 'PG',
+    bg: '#071D3A',
+    color: '#DDB568',
+  },
+  {
+    id: 'team-madhubabu',
+    name: 'Madhubabu Gentyala',
+    role: 'Operations & Technical Lead',
+    initials: 'MG',
+    bg: '#092344',
+    color: '#FFFFFF',
+  },
+];
 
 export default function AdvisoryBoard() {
   return (
     <section className="advisory-section" id="advisory-board">
       <div className="container">
-        {/* Header Row */}
+        {/* =========================================================================
+            NOTE: "Guidance from Industry Experts / Our Advisory Board" is commented
+            out below per user request and will be restored whenever requested.
+            ========================================================================= */}
+        {/*
         <div className="section-header-row">
           <div>
             <span className="section-eyebrow">
@@ -24,7 +71,6 @@ export default function AdvisoryBoard() {
           </a>
         </div>
 
-        {/* 4 Advisors Row */}
         <div className="advisory-grid">
           {advisors.map((advisor) => (
             <div key={advisor.id} className="advisor-card">
@@ -38,6 +84,94 @@ export default function AdvisoryBoard() {
                 <span className="advisor-card__role">{advisor.role}</span>
                 <span className="advisor-card__domain">{advisor.domain}</span>
               </div>
+            </div>
+          ))}
+        </div>
+        */}
+
+        {/* KEY TEAM MEMBERS SECTION */}
+        <div className="section-header-row">
+          <div>
+            <span className="section-eyebrow">
+              <Sparkles size={13} />
+              <span>KEY TEAM MEMBERS</span>
+            </span>
+            <h2 className="section-heading">Meet Our Leadership & Core Team</h2>
+            <p className="section-subtitle">
+              The passionate professionals driving Interskill Staffing Solutions — Next Gen Hiring.
+            </p>
+          </div>
+          <a href="#consultation" className="btn-outline-gold">
+            <span>Connect with Our Team</span>
+            <ArrowRight size={14} />
+          </a>
+        </div>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '16px',
+            marginTop: '24px',
+          }}
+        >
+          {teamMembers.map((member) => (
+            <div
+              key={member.id}
+              style={{
+                backgroundColor: '#FFFFFF',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-md)',
+                padding: '20px 16px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center',
+                boxShadow: 'var(--shadow-subtle)',
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+              }}
+            >
+              <div
+                style={{
+                  width: '54px',
+                  height: '54px',
+                  borderRadius: '50%',
+                  backgroundColor: member.bg,
+                  color: member.color,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '16px',
+                  fontWeight: 700,
+                  marginBottom: '12px',
+                  boxShadow: '0 4px 10px rgba(7, 29, 58, 0.15)',
+                  border: '2px solid var(--color-gold)',
+                }}
+              >
+                {member.initials}
+              </div>
+
+              <h4
+                style={{
+                  fontSize: '14.5px',
+                  fontWeight: 700,
+                  color: 'var(--color-primary-navy)',
+                  margin: '0 0 4px 0',
+                }}
+              >
+                {member.name}
+              </h4>
+
+              <span
+                style={{
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: 'var(--color-gold)',
+                  lineHeight: 1.35,
+                }}
+              >
+                {member.role}
+              </span>
             </div>
           ))}
         </div>

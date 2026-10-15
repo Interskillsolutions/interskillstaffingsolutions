@@ -7,8 +7,8 @@ export const recruitmentServices = [
   },
   {
     id: 'contract',
-    title: 'Contract Staffing',
-    description: 'Source talent for short-term projects and specific business requirements.',
+    title: 'Replacement Staffing',
+    description: 'Source talent for role replacements, short-term and specific business requirements.',
     iconName: 'FileText',
   },
   {
@@ -28,7 +28,7 @@ export const recruitmentServices = [
 export const employerIndustries = [
   { id: 'it', title: 'IT & Technology', iconName: 'Laptop' },
   { id: 'business', title: 'Business Support & Corporate Roles', iconName: 'Users' },
-  { id: 'hr', title: 'HR & Recruitment', iconName: 'UserCheck' },
+  { id: 'hr', title: 'Human Resources', iconName: 'UserCheck' },
   { id: 'finance', title: 'Finance, Accounting & Research', iconName: 'TrendingUp' },
   { id: 'engineering', title: 'Engineering & Civil', iconName: 'Cog' },
 ];
@@ -72,19 +72,19 @@ export const whyChooseUsPoints = [
   'Faster hiring process',
   'Industry-focused recruitment',
   'Dedicated support and clear communication',
-  'Solutions for both permanent and contract roles',
+  'Solutions for both permanent and replacement staffing',
 ];
 
 export const employerStats = [
   {
     id: 'stat-professionals',
-    number: '1000+',
+    number: '10000+',
     label: 'Professionals Connected',
     iconName: 'UserCheck',
   },
   {
     id: 'stat-focus',
-    number: '5+',
+    number: '600+',
     label: 'Industry Focus Areas',
     iconName: 'Crosshair',
   },

@@ -11,7 +11,7 @@ export const industries = [
   },
   {
     id: 'hr',
-    title: 'HR & Recruitment',
+    title: 'Human Resources',
     iconName: 'Target',
   },
   {

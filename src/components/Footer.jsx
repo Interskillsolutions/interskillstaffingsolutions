@@ -146,7 +146,7 @@ export default function Footer({ onNavigate }) {
                   className="footer-nav-link"
                   onClick={(e) => handleNav(e, null, '#advisory-board')}
                 >
-                  Advisory Board
+                  Key Team
                 </a>
                 <a
                   href="#faqs"

@@ -54,11 +54,11 @@ export default function Hero({ onNavigate }) {
 
           <div className="hero-stats">
             <div className="hero-stat-item">
-              <span className="hero-stat-number">5+</span>
+              <span className="hero-stat-number">600+</span>
               <span className="hero-stat-label">Industry Focus Areas</span>
             </div>
             <div className="hero-stat-item">
-              <span className="hero-stat-number">1000+</span>
+              <span className="hero-stat-number">10000+</span>
               <span className="hero-stat-label">Professionals Connected</span>
             </div>
             <div className="hero-stat-item">

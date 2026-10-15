@@ -27,7 +27,7 @@ export default function Header({
     { label: 'For Job Seekers', id: 'job-seekers', href: '#job-seekers', page: 'job-seekers' },
     { label: 'For Employers', id: 'employers', href: '#/employers', page: 'employers' },
     { label: 'Job Openings', id: 'job-openings', href: '#job-openings' },
-    { label: 'Advisory Board', id: 'advisory-board', href: '#advisory-board' },
+    { label: 'Key Team', id: 'advisory-board', href: '#advisory-board' },
     { label: 'Contact Us', id: 'contact-us', href: '#contact-us' },
   ];
 

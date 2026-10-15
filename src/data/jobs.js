@@ -9,7 +9,7 @@ export const jobs = [
   {
     id: 'job-2',
     title: 'HR Executive',
-    category: 'HR & Recruitment',
+    category: 'Human Resources',
     location: 'Thane, Maharashtra',
     experience: '0 – 2 Years',
   },

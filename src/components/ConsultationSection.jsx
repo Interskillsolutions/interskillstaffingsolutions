@@ -238,6 +238,7 @@ export default function ConsultationSection() {
                       <option value="finance">Finance & Accounting</option>
                       <option value="engineering">Engineering & Civil</option>
                       <option value="support">Business & Corporate Support</option>
+                      <option value="other">Other</option>
                     </select>
                   </div>
                 </div>

@@ -18,7 +18,7 @@ export const jobSeekerJobs = [
     experience: '0 – 2 Years',
     location: 'Thane, Maharashtra',
     type: 'Full-Time',
-    category: 'HR & Recruitment',
+    category: 'Human Resources',
     tags: ['HR Operations', 'Recruitment'],
   },
   {
@@ -47,10 +47,11 @@ export const jobSeekerJobs = [
 
 export const jobCategories = [
   'IT & Technology',
-  'HR & Recruitment',
+  'Human Resources',
   'Finance & Accounting',
   'Engineering & Civil',
   'Business Support & Sales',
+  'Other',
 ];
 
 export const jobLocations = [

@@ -76,6 +76,7 @@ export default function CallbackSection() {
                   <option value="Job opportunities">Job opportunities</option>
                   <option value="Hiring requirements">Hiring requirements</option>
                   <option value="General enquiry">General enquiry</option>
+                  <option value="Other">Other</option>
                 </select>
 
                 <button type="submit" className="callback-btn">

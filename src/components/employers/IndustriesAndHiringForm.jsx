@@ -207,10 +207,11 @@ export default function IndustriesAndHiringForm() {
                     <option value="">Select Job Category</option>
                     <option value="IT & Technology">IT & Technology</option>
                     <option value="Business Support & Corporate Roles">Business Support & Corporate Roles</option>
-                    <option value="HR & Recruitment">HR & Recruitment</option>
+                    <option value="Human Resources">Human Resources</option>
                     <option value="Finance, Accounting & Research">Finance, Accounting & Research</option>
                     <option value="Engineering & Civil">Engineering & Civil</option>
                     <option value="Sales & Marketing">Sales & Marketing</option>
+                    <option value="Other">Other</option>
                   </select>
                 </div>
                 <div className="emp-form-group">

@@ -80,13 +80,6 @@ export default function JobSeekers({ onNavigate }) {
         {/* SECTION 6: HERO BANNER */}
         <JobSeekerHero />
 
-        {/* SECTION 7: JOB SEARCH FILTER BAR */}
-        <JobSearchBar
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          onSearch={scrollToJobs}
-        />
-
         {/* SECTION 8: LATEST JOB OPENINGS */}
         <LatestJobs
           jobs={filteredJobs}
