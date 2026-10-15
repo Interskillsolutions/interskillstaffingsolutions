@@ -2,7 +2,7 @@ import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import '../styles/hero.css';
 
-export default function Hero() {
+export default function Hero({ onNavigate }) {
   return (
     <section className="hero-section" id="home">
       <div className="container hero-grid">
@@ -24,11 +24,29 @@ export default function Hero() {
           </p>
 
           <div className="hero-actions">
-            <a href="#job-openings" className="btn-gold">
+            <a
+              href="#/job-seekers"
+              className="btn-gold"
+              onClick={(e) => {
+                if (onNavigate) {
+                  e.preventDefault();
+                  onNavigate('job-seekers');
+                }
+              }}
+            >
               <span>Find a Job</span>
               <ArrowRight size={15} />
             </a>
-            <a href="#consultation" className="btn-outline-white">
+            <a
+              href="#/employers"
+              className="btn-outline-white"
+              onClick={(e) => {
+                if (onNavigate) {
+                  e.preventDefault();
+                  onNavigate('employers');
+                }
+              }}
+            >
               <span>Hire Talent</span>
               <ArrowRight size={15} />
             </a>

@@ -126,9 +126,9 @@ export default function Footer({ onNavigate }) {
                   For Job Seekers
                 </a>
                 <a
-                  href="#employers"
+                  href="#/employers"
                   className="footer-nav-link"
-                  onClick={(e) => handleNav(e, null, '#employers')}
+                  onClick={(e) => handleNav(e, 'employers')}
                 >
                   For Employers
                 </a>

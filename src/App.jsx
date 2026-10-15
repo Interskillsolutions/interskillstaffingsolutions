@@ -15,6 +15,7 @@ import Footer from './components/Footer';
 
 // Pages
 import JobSeekers from './pages/JobSeekers';
+import Employers from './pages/Employers';
 
 import './styles/variables.css';
 import './styles/global.css';
@@ -27,6 +28,9 @@ export default function App() {
     if (hash.includes('job-seeker') || path.includes('job-seeker')) {
       return 'job-seekers';
     }
+    if (hash.includes('employer') || path.includes('employer')) {
+      return 'employers';
+    }
     return 'home';
   };
 
@@ -38,6 +42,8 @@ export default function App() {
       const path = window.location.pathname.toLowerCase();
       if (hash.includes('job-seeker') || path.includes('job-seeker')) {
         setCurrentPage('job-seekers');
+      } else if (hash.includes('employer') || path.includes('employer')) {
+        setCurrentPage('employers');
       } else if (hash === '' || hash === '#home' || hash === '#/' || path === '/') {
         setCurrentPage('home');
       }
@@ -55,6 +61,8 @@ export default function App() {
     setCurrentPage(page);
     if (page === 'job-seekers') {
       window.location.hash = '#/job-seekers';
+    } else if (page === 'employers') {
+      window.location.hash = '#/employers';
     } else {
       window.location.hash = '#/';
     }
@@ -63,6 +71,10 @@ export default function App() {
 
   if (currentPage === 'job-seekers') {
     return <JobSeekers onNavigate={navigateTo} />;
+  }
+
+  if (currentPage === 'employers') {
+    return <Employers onNavigate={navigateTo} />;
   }
 
   return (
@@ -77,10 +89,10 @@ export default function App() {
 
       <main>
         {/* SECTION 2: HERO BANNER */}
-        <Hero />
+        <Hero onNavigate={navigateTo} />
 
         {/* SECTION 3: JOB SEEKERS AND EMPLOYERS */}
-        <AudienceCards />
+        <AudienceCards onNavigate={navigateTo} />
 
         {/* SECTION 4: FREE CONSULTATION FORM */}
         <ConsultationSection />

@@ -25,7 +25,7 @@ export default function Header({
     { label: 'About Us', id: 'about', href: '#about' },
     { label: 'Industries', id: 'industries', href: '#industries' },
     { label: 'For Job Seekers', id: 'job-seekers', href: '#job-seekers', page: 'job-seekers' },
-    { label: 'For Employers', id: 'employers', href: '#employers' },
+    { label: 'For Employers', id: 'employers', href: '#/employers', page: 'employers' },
     { label: 'Job Openings', id: 'job-openings', href: '#job-openings' },
     { label: 'Advisory Board', id: 'advisory-board', href: '#advisory-board' },
     { label: 'Contact Us', id: 'contact-us', href: '#contact-us' },

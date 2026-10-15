@@ -1,9 +1,9 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
 
-export default function AudienceCards() {
+export default function AudienceCards({ onNavigate }) {
   return (
-    <section className="audience-section" id="job-seekers">
+    <section className="audience-section" id="job-seekers-section">
       <div className="container audience-grid">
         {/* Left Card: Job Seekers */}
         <div className="audience-card">
@@ -20,7 +20,16 @@ export default function AudienceCards() {
             <p className="audience-card__text">
               Submit your resume, explore current openings and take the next step in your career.
             </p>
-            <a href="#job-openings" className="btn-gold audience-card__button">
+            <a
+              href="#/job-seekers"
+              className="btn-gold audience-card__button"
+              onClick={(e) => {
+                if (onNavigate) {
+                  e.preventDefault();
+                  onNavigate('job-seekers');
+                }
+              }}
+            >
               <span>Find a Job</span>
               <ArrowRight size={14} />
             </a>
@@ -28,7 +37,7 @@ export default function AudienceCards() {
         </div>
 
         {/* Right Card: Employers */}
-        <div className="audience-card" id="employers">
+        <div className="audience-card" id="employers-section">
           <div className="audience-card__image-container">
             <img
               src="/images/employer-meeting.png"
@@ -42,7 +51,16 @@ export default function AudienceCards() {
             <p className="audience-card__text">
               Share your hiring requirements and connect with candidates suited to your business needs.
             </p>
-            <a href="#consultation" className="btn-navy audience-card__button">
+            <a
+              href="#/employers"
+              className="btn-navy audience-card__button"
+              onClick={(e) => {
+                if (onNavigate) {
+                  e.preventDefault();
+                  onNavigate('employers');
+                }
+              }}
+            >
               <span>Submit Hiring Requirements</span>
               <ArrowRight size={14} />
             </a>
