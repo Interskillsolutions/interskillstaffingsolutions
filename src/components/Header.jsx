@@ -3,10 +3,14 @@ import Logo from './Logo';
 import { Menu, X } from 'lucide-react';
 import '../styles/header.css';
 
-export default function Header() {
+export default function Header({
+  activePage = 'home',
+  ctaLabel = 'Get Started',
+  ctaHref = '#consultation',
+  onNavigate,
+}) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('home');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,37 +21,75 @@ export default function Header() {
   }, []);
 
   const navLinks = [
-    { label: 'Home', href: '#home', id: 'home' },
-    { label: 'About Us', href: '#about', id: 'about' },
-    { label: 'Industries', href: '#industries', id: 'industries' },
-    { label: 'For Job Seekers', href: '#job-seekers', id: 'job-seekers' },
-    { label: 'For Employers', href: '#employers', id: 'employers' },
-    { label: 'Job Openings', href: '#job-openings', id: 'job-openings' },
-    { label: 'Advisory Board', href: '#advisory-board', id: 'advisory-board' },
-    { label: 'Contact Us', href: '#contact-us', id: 'contact-us' },
+    { label: 'Home', id: 'home', href: '#home', page: 'home' },
+    { label: 'About Us', id: 'about', href: '#about' },
+    { label: 'Industries', id: 'industries', href: '#industries' },
+    { label: 'For Job Seekers', id: 'job-seekers', href: '#job-seekers', page: 'job-seekers' },
+    { label: 'For Employers', id: 'employers', href: '#employers' },
+    { label: 'Job Openings', id: 'job-openings', href: '#job-openings' },
+    { label: 'Advisory Board', id: 'advisory-board', href: '#advisory-board' },
+    { label: 'Contact Us', id: 'contact-us', href: '#contact-us' },
   ];
+
+  const handleLinkClick = (e, link) => {
+    if (link.page) {
+      if (onNavigate) {
+        e.preventDefault();
+        onNavigate(link.page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    } else {
+      // If we are not on the homepage and the link is an anchor on the homepage, navigate to home then scroll
+      if (activePage !== 'home' && onNavigate) {
+        e.preventDefault();
+        onNavigate('home');
+        setTimeout(() => {
+          const el = document.querySelector(link.href);
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 150);
+      }
+    }
+    setMobileMenuOpen(false);
+  };
 
   return (
     <header className={`site-header ${isScrolled ? 'site-header--scrolled' : ''}`}>
       <div className="container site-header__inner">
-        <Logo variant="light" />
+        <div
+          onClick={(e) => {
+            if (onNavigate) {
+              e.preventDefault();
+              onNavigate('home');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          }}
+          style={{ cursor: 'pointer' }}
+        >
+          <Logo variant="light" />
+        </div>
 
         <nav className="site-nav" aria-label="Main Navigation">
-          {navLinks.map((link) => (
-            <a
-              key={link.id}
-              href={link.href}
-              className={`site-nav__link ${activeSection === link.id ? 'is-active' : ''}`}
-              onClick={() => setActiveSection(link.id)}
-            >
-              {link.label}
-            </a>
-          ))}
+          {navLinks.map((link) => {
+            const isActive =
+              activePage === link.id ||
+              (activePage === 'home' && link.id === 'home');
+
+            return (
+              <a
+                key={link.id}
+                href={link.href}
+                className={`site-nav__link ${isActive ? 'is-active' : ''}`}
+                onClick={(e) => handleLinkClick(e, link)}
+              >
+                {link.label}
+              </a>
+            );
+          })}
         </nav>
 
         <div className="site-header__cta">
-          <a href="#consultation" className="btn-gold">
-            Get Started
+          <a href={ctaHref} className="btn-gold">
+            {ctaLabel}
           </a>
         </div>
 
@@ -67,22 +109,19 @@ export default function Header() {
               <a
                 key={link.id}
                 href={link.href}
-                className="mobile-drawer__link"
-                onClick={() => {
-                  setActiveSection(link.id);
-                  setMobileMenuOpen(false);
-                }}
+                className={`mobile-drawer__link ${activePage === link.id ? 'is-active' : ''}`}
+                onClick={(e) => handleLinkClick(e, link)}
               >
                 {link.label}
               </a>
             ))}
           </div>
           <a
-            href="#consultation"
+            href={ctaHref}
             className="btn-gold mobile-drawer__cta"
             onClick={() => setMobileMenuOpen(false)}
           >
-            Get Started
+            {ctaLabel}
           </a>
         </div>
       )}

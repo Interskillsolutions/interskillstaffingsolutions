@@ -3,14 +3,36 @@ import Logo from './Logo';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 import '../styles/footer.css';
 
-export default function Footer() {
+export default function Footer({ onNavigate }) {
+  const handleNav = (e, page, hash) => {
+    if (page && onNavigate) {
+      e.preventDefault();
+      onNavigate(page);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (hash) {
+      // If we have an anchor
+      if (onNavigate) {
+        onNavigate('home');
+        setTimeout(() => {
+          const el = document.querySelector(hash);
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 150);
+      }
+    }
+  };
+
   return (
     <footer className="site-footer" id="contact-us">
       <div className="container">
         <div className="footer-grid">
           {/* Column 1: Brand */}
           <div className="footer-col-brand">
-            <Logo variant="dark" />
+            <div
+              onClick={(e) => handleNav(e, 'home')}
+              style={{ cursor: 'pointer', display: 'inline-block' }}
+            >
+              <Logo variant="dark" />
+            </div>
             <p className="footer-tagline">
               Connecting businesses with suitable talent and helping professionals discover
               meaningful career opportunities.
@@ -75,17 +97,71 @@ export default function Footer() {
             <h4 className="footer-heading">Quick Links</h4>
             <div className="footer-links-subgrid">
               <div className="footer-link-group">
-                <a href="#home" className="footer-nav-link">Home</a>
-                <a href="#about" className="footer-nav-link">About Us</a>
-                <a href="#industries" className="footer-nav-link">Industries</a>
-                <a href="#job-seekers" className="footer-nav-link">For Job Seekers</a>
-                <a href="#employers" className="footer-nav-link">For Employers</a>
+                <a
+                  href="#home"
+                  className="footer-nav-link"
+                  onClick={(e) => handleNav(e, 'home')}
+                >
+                  Home
+                </a>
+                <a
+                  href="#about"
+                  className="footer-nav-link"
+                  onClick={(e) => handleNav(e, null, '#about')}
+                >
+                  About Us
+                </a>
+                <a
+                  href="#industries"
+                  className="footer-nav-link"
+                  onClick={(e) => handleNav(e, null, '#industries')}
+                >
+                  Industries
+                </a>
+                <a
+                  href="#job-seekers"
+                  className="footer-nav-link"
+                  onClick={(e) => handleNav(e, 'job-seekers')}
+                >
+                  For Job Seekers
+                </a>
+                <a
+                  href="#employers"
+                  className="footer-nav-link"
+                  onClick={(e) => handleNav(e, null, '#employers')}
+                >
+                  For Employers
+                </a>
               </div>
               <div className="footer-link-group">
-                <a href="#job-openings" className="footer-nav-link">Job Openings</a>
-                <a href="#advisory-board" className="footer-nav-link">Advisory Board</a>
-                <a href="#faqs" className="footer-nav-link">FAQs</a>
-                <a href="#contact-us" className="footer-nav-link">Contact Us</a>
+                <a
+                  href="#job-openings"
+                  className="footer-nav-link"
+                  onClick={(e) => handleNav(e, null, '#job-openings')}
+                >
+                  Job Openings
+                </a>
+                <a
+                  href="#advisory-board"
+                  className="footer-nav-link"
+                  onClick={(e) => handleNav(e, null, '#advisory-board')}
+                >
+                  Advisory Board
+                </a>
+                <a
+                  href="#faqs"
+                  className="footer-nav-link"
+                  onClick={(e) => handleNav(e, null, '#faqs')}
+                >
+                  FAQs
+                </a>
+                <a
+                  href="#contact-us"
+                  className="footer-nav-link"
+                  onClick={(e) => handleNav(e, null, '#contact-us')}
+                >
+                  Contact Us
+                </a>
               </div>
             </div>
           </div>
