@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Compass, Sparkles } from 'lucide-react';
+import { ArrowRight, Eye, Sparkles } from 'lucide-react';
 
 export default function AboutMissionVision() {
   return (
@@ -24,18 +24,17 @@ export default function AboutMissionVision() {
           </a>
         </div>
 
-        {/* Right Column: Mission Card */}
+        {/* Right Column: Vision Card */}
         <div className="mission-vision-cards" style={{ gridTemplateColumns: '1fr' }}>
-          {/* Card: Our Mission */}
+          {/* Card: Our Vision */}
           <div className="mv-card mv-card--dark" style={{ justifyContent: 'center', minHeight: '180px' }}>
             <div className="mv-card__icon-wrap">
-              <Compass size={32} />
+              <Eye size={32} />
             </div>
-            <h3 className="mv-card__title" style={{ fontSize: '18px' }}>Our Mission</h3>
+            <h3 className="mv-card__title" style={{ fontSize: '18px' }}>Our Vision</h3>
             <p className="mv-card__text" style={{ fontSize: '13.5px', lineHeight: '1.6' }}>
-              To connect businesses with the right talent while helping individuals move
-              forward in their careers through responsible, reliable and people-focused
-              recruitment services.
+              To create meaningful connections between employers and candidates through
+              responsible, reliable and people-focused recruitment services.
             </p>
           </div>
         </div>
