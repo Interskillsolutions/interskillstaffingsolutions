@@ -11,6 +11,7 @@ import FAQAndPromoBanner from '../components/job-seekers/FAQAndPromoBanner';
 import { ResumeModal, ApplyJobModal } from '../components/job-seekers/JobModals';
 
 import { jobSeekerJobs } from '../data/jobSeekerJobs';
+import { getStored, STORAGE_KEYS } from '../admin/adminStore';
 import '../styles/job-seekers.css';
 
 export default function JobSeekers({ onNavigate }) {
@@ -28,9 +29,11 @@ export default function JobSeekers({ onNavigate }) {
     setFilters((prev) => ({ ...prev, [field]: value }));
   };
 
+  const allJobs = getStored(STORAGE_KEYS.JOBS, jobSeekerJobs).filter((j) => j.status !== 'Inactive');
+
   // Client-side filtering
   const filteredJobs = useMemo(() => {
-    return jobSeekerJobs.filter((job) => {
+    return allJobs.filter((job) => {
       // Keyword matches title, company, or tags
       if (filters.keyword.trim()) {
         const kw = filters.keyword.toLowerCase();

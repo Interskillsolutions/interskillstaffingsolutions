@@ -195,7 +195,20 @@ export default function Footer({ onNavigate }) {
         {/* Bottom Bar */}
         <div className="footer-bottom">
           <span>&copy; {new Date().getFullYear()} Interskill Staffing Solutions — Next Gem Hiring. All rights reserved.</span>
-          <span>Connecting Talent with Opportunity</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <span>Connecting Talent with Opportunity</span>
+            <span style={{ opacity: 0.3 }}>|</span>
+            <a
+              href="#/admin"
+              onClick={(e) => handleNav(e, 'admin')}
+              style={{ color: '#BAC7D5', fontSize: '11.5px', textDecoration: 'none', transition: 'color 0.2s' }}
+              onMouseEnter={(e) => (e.target.style.color = '#DDB568')}
+              onMouseLeave={(e) => (e.target.style.color = '#BAC7D5')}
+              title="Recruitment Operations Dashboard"
+            >
+              Admin Portal
+            </a>
+          </div>
         </div>
       </div>
     </footer>

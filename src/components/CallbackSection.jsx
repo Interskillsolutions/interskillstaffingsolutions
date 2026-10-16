@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { getStored, setStored, STORAGE_KEYS } from '../admin/adminStore';
 
 export default function CallbackSection() {
   const [form, setForm] = useState({
@@ -16,6 +17,23 @@ export default function CallbackSection() {
       setError('Please provide your name and mobile number.');
       return;
     }
+
+    try {
+      const existing = getStored(STORAGE_KEYS.CALLBACKS, []);
+      const newCallback = {
+        id: `CB-${Date.now().toString().slice(-4)}`,
+        name: form.name.trim(),
+        mobile: form.mobile.trim(),
+        topic: form.topic || 'General enquiry',
+        source: 'Website Callback Banner',
+        status: 'Pending',
+        date: new Date().toLocaleString(),
+      };
+      setStored(STORAGE_KEYS.CALLBACKS, [newCallback, ...existing]);
+    } catch (err) {
+      console.error('Failed to store callback:', err);
+    }
+
     setError('');
     setSent(true);
   };

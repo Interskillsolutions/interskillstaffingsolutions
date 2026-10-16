@@ -10,6 +10,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import { employerIndustries } from '../../data/employerData';
+import { getStored, setStored, STORAGE_KEYS } from '../../admin/adminStore';
 
 export default function IndustriesAndHiringForm() {
   const [formData, setFormData] = useState({
@@ -65,6 +66,26 @@ export default function IndustriesAndHiringForm() {
     if (!formData.email.trim() || !formData.email.includes('@')) {
       setErrorMsg('Please enter a valid business email address.');
       return;
+    }
+
+    // Persist to admin store
+    try {
+      const existingLeads = getStored(STORAGE_KEYS.EMPLOYER_LEADS, []);
+      const newLead = {
+        id: `LEAD-${Date.now().toString().slice(-4)}`,
+        name: formData.name,
+        company: formData.company,
+        phone: formData.phone,
+        email: formData.email,
+        category: formData.category || 'General Requirement',
+        openings: formData.openings || '1-2',
+        description: formData.description || '',
+        status: 'New',
+        date: new Date().toLocaleString(),
+      };
+      setStored(STORAGE_KEYS.EMPLOYER_LEADS, [newLead, ...existingLeads]);
+    } catch (err) {
+      console.error('Failed to store lead:', err);
     }
 
     setSubmitted(true);

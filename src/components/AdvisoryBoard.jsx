@@ -1,8 +1,9 @@
 import React from 'react';
 import { ArrowRight, Sparkles, UserCheck } from 'lucide-react';
+import { getStored, STORAGE_KEYS } from '../admin/adminStore';
 // import { advisors } from '../data/advisors';
 
-export const teamMembers = [
+export const defaultTeamMembers = [
   {
     id: 'team-priya',
     name: "Priya Ma'am",
@@ -36,6 +37,7 @@ export const teamMembers = [
 ];
 
 export default function AdvisoryBoard() {
+  const currentTeam = getStored(STORAGE_KEYS.TEAM, defaultTeamMembers);
   return (
     <section className="advisory-section" id="advisory-board">
       <div className="container">
@@ -105,7 +107,7 @@ export default function AdvisoryBoard() {
             marginTop: '28px',
           }}
         >
-          {teamMembers.map((member) => (
+          {currentTeam.map((member) => (
             <div
               key={member.id}
               style={{

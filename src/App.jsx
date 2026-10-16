@@ -16,6 +16,7 @@ import Footer from './components/Footer';
 // Pages
 import JobSeekers from './pages/JobSeekers';
 import Employers from './pages/Employers';
+import AdminLayout from './admin/AdminLayout';
 
 import './styles/variables.css';
 import './styles/global.css';
@@ -25,6 +26,9 @@ export default function App() {
   const getInitialPage = () => {
     const hash = window.location.hash.toLowerCase();
     const path = window.location.pathname.toLowerCase();
+    if (hash.includes('admin') || path.includes('admin')) {
+      return 'admin';
+    }
     if (hash.includes('job-seeker') || path.includes('job-seeker')) {
       return 'job-seekers';
     }
@@ -40,7 +44,9 @@ export default function App() {
     const handleLocationChange = () => {
       const hash = window.location.hash.toLowerCase();
       const path = window.location.pathname.toLowerCase();
-      if (hash.includes('job-seeker') || path.includes('job-seeker')) {
+      if (hash.includes('admin') || path.includes('admin')) {
+        setCurrentPage('admin');
+      } else if (hash.includes('job-seeker') || path.includes('job-seeker')) {
         setCurrentPage('job-seekers');
       } else if (hash.includes('employer') || path.includes('employer')) {
         setCurrentPage('employers');
@@ -63,11 +69,17 @@ export default function App() {
       window.location.hash = '#/job-seekers';
     } else if (page === 'employers') {
       window.location.hash = '#/employers';
+    } else if (page === 'admin') {
+      window.location.hash = '#/admin';
     } else {
       window.location.hash = '#/';
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  if (currentPage === 'admin') {
+    return <AdminLayout onNavigate={navigateTo} />;
+  }
 
   if (currentPage === 'job-seekers') {
     return <JobSeekers onNavigate={navigateTo} />;

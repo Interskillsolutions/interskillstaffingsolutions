@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CheckCircle2, Lock, ArrowRight } from 'lucide-react';
+import { getStored, setStored, STORAGE_KEYS } from '../admin/adminStore';
 import '../styles/forms.css';
 
 export default function ConsultationSection() {
@@ -38,6 +39,28 @@ export default function ConsultationSection() {
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
+    }
+
+    try {
+      const existing = getStored(STORAGE_KEYS.CONSULTATIONS, []);
+      const newConsultation = {
+        id: `CON-${Date.now().toString().slice(-4)}`,
+        name: formData.fullName.trim(),
+        phone: formData.phone.trim(),
+        email: formData.email.trim(),
+        requirementType:
+          formData.requirementType === 'job'
+            ? "I'm looking for a job"
+            : formData.requirementType === 'hiring'
+            ? "I'm hiring for my company"
+            : 'I have a general enquiry',
+        preferredRole: formData.preferredRole || 'General consultation',
+        status: 'New',
+        date: new Date().toLocaleString(),
+      };
+      setStored(STORAGE_KEYS.CONSULTATIONS, [newConsultation, ...existing]);
+    } catch (err) {
+      console.error('Failed to store consultation:', err);
     }
 
     setErrors({});

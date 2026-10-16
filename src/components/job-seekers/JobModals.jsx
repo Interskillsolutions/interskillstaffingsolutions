@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, CheckCircle2, FileUp, ArrowRight } from 'lucide-react';
+import { getStored, setStored, STORAGE_KEYS } from '../../admin/adminStore';
 
 export function ResumeModal({ isOpen, onClose }) {
   const [name, setName] = useState('');
@@ -17,6 +18,24 @@ export function ResumeModal({ isOpen, onClose }) {
       setError('Please fill in all required fields.');
       return;
     }
+
+    try {
+      const existing = getStored(STORAGE_KEYS.RESUMES, []);
+      const newResume = {
+        id: `RES-${Date.now().toString().slice(-4)}`,
+        candidateName: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        category: 'General Candidate Pool',
+        experience: 'Profile Submitted',
+        fileName: file ? file.name : 'Candidate_Resume.pdf',
+        date: new Date().toLocaleString(),
+      };
+      setStored(STORAGE_KEYS.RESUMES, [newResume, ...existing]);
+    } catch (err) {
+      console.error('Failed to store resume:', err);
+    }
+
     setError('');
     setSubmitted(true);
   };
@@ -171,6 +190,27 @@ export function ApplyJobModal({ job, isOpen, onClose }) {
       setError('Please provide your name, email, and contact number.');
       return;
     }
+
+    try {
+      const existing = getStored(STORAGE_KEYS.APPLICANTS, []);
+      const newApplicant = {
+        id: `APP-${Date.now().toString().slice(-4)}`,
+        jobId: job.id,
+        jobTitle: job.title,
+        candidateName: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        experience: job.experience || '1-3 Years',
+        currentCompany: 'Active Applicant',
+        status: 'New',
+        resumeFileName: `${name.trim().replace(/\s+/g, '_')}_Resume.pdf`,
+        date: new Date().toLocaleString(),
+      };
+      setStored(STORAGE_KEYS.APPLICANTS, [newApplicant, ...existing]);
+    } catch (err) {
+      console.error('Failed to store applicant:', err);
+    }
+
     setError('');
     setSubmitted(true);
   };
