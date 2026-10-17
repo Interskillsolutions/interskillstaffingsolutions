@@ -1,6 +1,8 @@
 // Frontend API Client for Interskill Staffing Solutions (MongoDB Atlas & Node.js API)
 
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_BASE_URL
+  ? `${import.meta.env.VITE_API_BASE_URL.replace(/\/+$/, '')}/api`
+  : '/api';
 
 const handleResponse = async (res) => {
   if (!res.ok) {

@@ -176,7 +176,25 @@ app.use('/api/resumes', resumesRouter);
 app.use('/api/cms', cmsRouter);
 app.use('/api/auth', authRouter);
 
-// Health check endpoint
+// Health check and root endpoints
+app.get('/', (req, res) => {
+  res.json({
+    status: 'online',
+    service: 'Interskill Staffing Solutions Backend API',
+    documentation: 'Connected to MongoDB Atlas and Cloudinary',
+    endpoints: {
+      health: '/api/health',
+      jobs: '/api/jobs',
+      leads: '/api/leads',
+      callbacks: '/api/callbacks',
+      consultations: '/api/consultations',
+      applicants: '/api/applicants',
+      resumes: '/api/resumes',
+      cms: '/api/cms',
+    },
+  });
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'healthy', database: 'connected', timestamp: new Date() });
 });
