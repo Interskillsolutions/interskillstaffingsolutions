@@ -31,6 +31,7 @@ export const employerIndustries = [
   { id: 'hr', title: 'Human Resources', iconName: 'UserCheck' },
   { id: 'finance', title: 'Finance, Accounting & Research', iconName: 'TrendingUp' },
   { id: 'engineering', title: 'Engineering & Civil', iconName: 'Cog' },
+  { id: 'other', title: 'Other', iconName: 'Layers' },
 ];
 
 export const employerProcessSteps = [

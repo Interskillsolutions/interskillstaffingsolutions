@@ -24,6 +24,11 @@ export const industries = [
     title: 'Engineering & Civil',
     iconName: 'Cog',
   },
+  {
+    id: 'other',
+    title: 'Other',
+    iconName: 'Layers',
+  },
 ];
 
 export const talentLevel = {

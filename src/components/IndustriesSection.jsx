@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Laptop, Users, Target, TrendingUp, Cog, GraduationCap, Sparkles } from 'lucide-react';
+import { ArrowRight, Laptop, Users, Target, TrendingUp, Cog, Layers, GraduationCap, Sparkles } from 'lucide-react';
 import { industries, talentLevel } from '../data/industries';
 
 export default function IndustriesSection() {
@@ -15,6 +15,8 @@ export default function IndustriesSection() {
         return <TrendingUp size={24} />;
       case 'Cog':
         return <Cog size={24} />;
+      case 'Layers':
+        return <Layers size={24} />;
       default:
         return <Laptop size={24} />;
     }

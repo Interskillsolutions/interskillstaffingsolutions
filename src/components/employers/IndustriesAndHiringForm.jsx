@@ -5,6 +5,7 @@ import {
   UserCheck,
   TrendingUp,
   Cog,
+  Layers,
   ArrowRight,
   Lock,
   CheckCircle,
@@ -38,6 +39,8 @@ export default function IndustriesAndHiringForm() {
         return <TrendingUp size={20} />;
       case 'Cog':
         return <Cog size={20} />;
+      case 'Layers':
+        return <Layers size={20} />;
       default:
         return <Laptop size={20} />;
     }
@@ -116,9 +119,9 @@ export default function IndustriesAndHiringForm() {
             ))}
           </div>
 
-          {/* Row 2: 2 cards */}
-          <div className="emp-industries-subgrid-row2">
-            {employerIndustries.slice(3, 5).map((ind) => (
+          {/* Row 2: 3 cards */}
+          <div className="emp-industries-subgrid">
+            {employerIndustries.slice(3).map((ind) => (
               <div key={ind.id} className="emp-industry-card">
                 <div className="emp-industry-card__icon-wrap">
                   {getIndustryIcon(ind.iconName)}

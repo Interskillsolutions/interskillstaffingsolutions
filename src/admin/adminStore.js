@@ -276,33 +276,45 @@ const initialResumes = [
 const initialTeam = [
   {
     id: 'team-priya',
-    name: "Priya Ma'am",
-    role: 'CEO',
+    name: 'Dr Priya Gawade',
+    role: 'CEO of Interskill Solutions & Interskill Staffing Solutions',
+    quote: 'People are not just resources; they are the real growth engines of any business.',
     image: '/images/team-priya.jpg',
   },
   {
     id: 'team-shreyash',
     name: 'Shreyash Shirekar',
     role: 'Talent Acquisition & Business Development',
+    quote: 'The right talent doesn’t just fill a role; it builds a future.',
     image: '/images/team-shreyash.jpg',
-  },
-  {
-    id: 'team-sahil',
-    name: 'Sahil More',
-    role: 'Recruitment Specialist',
-    image: '/images/team-sahil.jpg',
-  },
-  {
-    id: 'team-priyanka',
-    name: 'Priyanka Guhagarkar',
-    role: 'Talent Acquisition Executive',
-    image: '/images/team-priyanka.png',
   },
   {
     id: 'team-madhubabu',
     name: 'Madhubabu Gentyala',
-    role: 'Operations & Technical Lead',
+    role: 'IT & Technology Talent Specialist',
+    quote: 'Connecting the right technical talent with opportunities to grow, innovate and succeed.',
     image: '/images/team-madhubabu.png',
+  },
+  {
+    id: 'team-sahil',
+    name: 'Sahil More',
+    role: 'Cybersecurity Talent Specialist',
+    quote: 'Building stronger digital teams by connecting cybersecurity talent with the right opportunities.',
+    image: '/images/team-sahil.jpg',
+  },
+  {
+    id: 'team-yash',
+    name: 'Yash Diwate',
+    role: 'Digital Marketing & Creative Talent Specialist',
+    quote: 'Great ideas begin with great people; connecting creative talent creates meaningful impact.',
+    image: '/images/team-yash.jpg',
+  },
+  {
+    id: 'team-priyanka',
+    name: 'Priyanka Ghuhagarkar',
+    role: 'Branch Operations Manager',
+    quote: 'Strong operations, teamwork and trust are the foundation of excellent service.',
+    image: '/images/team-priyanka.png',
   },
 ];
 
@@ -355,7 +367,8 @@ export const initAdminStore = () => {
   if (!localStorage.getItem(STORAGE_KEYS.RESUMES)) {
     setStored(STORAGE_KEYS.RESUMES, initialResumes);
   }
-  if (!localStorage.getItem(STORAGE_KEYS.TEAM)) {
+  const storedTeam = getStored(STORAGE_KEYS.TEAM, null);
+  if (!storedTeam || storedTeam.length < 6 || !storedTeam[0]?.quote) {
     setStored(STORAGE_KEYS.TEAM, initialTeam);
   }
   if (!localStorage.getItem(STORAGE_KEYS.STATS)) {

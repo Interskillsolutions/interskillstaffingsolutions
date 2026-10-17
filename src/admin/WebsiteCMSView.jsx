@@ -25,7 +25,7 @@ export default function WebsiteCMSView({
 
   // Edit team member modal / state
   const [editingMember, setEditingMember] = useState(null);
-  const [memberForm, setMemberForm] = useState({ name: '', role: '', image: '' });
+  const [memberForm, setMemberForm] = useState({ name: '', role: '', image: '', quote: '' });
 
   const handleStatsSubmit = (e) => {
     e.preventDefault();
@@ -36,7 +36,7 @@ export default function WebsiteCMSView({
 
   const openEditMember = (m) => {
     setEditingMember(m);
-    setMemberForm({ name: m.name, role: m.role, image: m.image });
+    setMemberForm({ name: m.name, role: m.role, image: m.image, quote: m.quote || '' });
   };
 
   const handleSaveMember = (e) => {
@@ -56,13 +56,14 @@ export default function WebsiteCMSView({
           name: memberForm.name,
           role: memberForm.role,
           image: memberForm.image || '/images/team-priya.jpg',
+          quote: memberForm.quote || '',
         },
       ];
     }
     setTeamList(updated);
     onSaveTeam(updated);
     setEditingMember(null);
-    setMemberForm({ name: '', role: '', image: '' });
+    setMemberForm({ name: '', role: '', image: '', quote: '' });
   };
 
   const handleDeleteMember = (id) => {
@@ -318,6 +319,19 @@ export default function WebsiteCMSView({
                     setMemberForm({ ...memberForm, image: e.target.value })
                   }
                   placeholder="/images/team-priya.jpg"
+                />
+              </div>
+
+              <div className="adm-form-group" style={{ marginBottom: '14px' }}>
+                <label className="adm-form-label">Key Quote / Philosophy</label>
+                <textarea
+                  className="adm-form-textarea"
+                  rows={2}
+                  value={memberForm.quote}
+                  onChange={(e) =>
+                    setMemberForm({ ...memberForm, quote: e.target.value })
+                  }
+                  placeholder="e.g. People are not just resources; they are the real growth engines of any business."
                 />
               </div>
 
