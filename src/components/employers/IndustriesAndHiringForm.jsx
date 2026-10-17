@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { employerIndustries } from '../../data/employerData';
 import { getStored, setStored, STORAGE_KEYS } from '../../admin/adminStore';
+import { api } from '../../api/apiClient';
 
 export default function IndustriesAndHiringForm() {
   const [formData, setFormData] = useState({
@@ -71,22 +72,24 @@ export default function IndustriesAndHiringForm() {
       return;
     }
 
-    // Persist to admin store
+    // Persist to admin store & MongoDB Atlas
+    const newLead = {
+      id: `LEAD-${Date.now().toString().slice(-4)}`,
+      name: formData.name,
+      company: formData.company,
+      phone: formData.phone,
+      email: formData.email,
+      category: formData.category || 'General Requirement',
+      openings: formData.openings || '1-2',
+      description: formData.description || '',
+      status: 'New',
+      date: new Date().toLocaleString(),
+    };
+
     try {
       const existingLeads = getStored(STORAGE_KEYS.EMPLOYER_LEADS, []);
-      const newLead = {
-        id: `LEAD-${Date.now().toString().slice(-4)}`,
-        name: formData.name,
-        company: formData.company,
-        phone: formData.phone,
-        email: formData.email,
-        category: formData.category || 'General Requirement',
-        openings: formData.openings || '1-2',
-        description: formData.description || '',
-        status: 'New',
-        date: new Date().toLocaleString(),
-      };
       setStored(STORAGE_KEYS.EMPLOYER_LEADS, [newLead, ...existingLeads]);
+      api.createLead(newLead).catch((err) => console.warn('Atlas lead sync note:', err.message));
     } catch (err) {
       console.error('Failed to store lead:', err);
     }

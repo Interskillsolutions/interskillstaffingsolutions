@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import { getStored, setStored, STORAGE_KEYS } from '../admin/adminStore';
+import { api } from '../api/apiClient';
 
 export default function CallbackSection() {
   const [form, setForm] = useState({
@@ -18,18 +19,20 @@ export default function CallbackSection() {
       return;
     }
 
+    const newCallback = {
+      id: `CB-${Date.now().toString().slice(-4)}`,
+      name: form.name.trim(),
+      mobile: form.mobile.trim(),
+      topic: form.topic || 'General enquiry',
+      source: 'Website Callback Banner',
+      status: 'Pending',
+      date: new Date().toLocaleString(),
+    };
+
     try {
       const existing = getStored(STORAGE_KEYS.CALLBACKS, []);
-      const newCallback = {
-        id: `CB-${Date.now().toString().slice(-4)}`,
-        name: form.name.trim(),
-        mobile: form.mobile.trim(),
-        topic: form.topic || 'General enquiry',
-        source: 'Website Callback Banner',
-        status: 'Pending',
-        date: new Date().toLocaleString(),
-      };
       setStored(STORAGE_KEYS.CALLBACKS, [newCallback, ...existing]);
+      api.createCallback(newCallback).catch((err) => console.warn('Atlas callback sync note:', err.message));
     } catch (err) {
       console.error('Failed to store callback:', err);
     }
