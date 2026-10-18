@@ -49,6 +49,25 @@ export default function Header({
     setMobileMenuOpen(false);
   };
 
+  const handleCtaClick = (e) => {
+    if (ctaHref && ctaHref.startsWith('#')) {
+      const targetId = ctaHref.replace(/^#\/?/, '');
+      const el = document.getElementById(targetId);
+      if (el) {
+        e.preventDefault();
+        el.scrollIntoView({ behavior: 'smooth' });
+      } else if (onNavigate && targetId === 'consultation') {
+        e.preventDefault();
+        onNavigate('home');
+        setTimeout(() => {
+          const homeEl = document.getElementById('consultation');
+          if (homeEl) homeEl.scrollIntoView({ behavior: 'smooth' });
+        }, 150);
+      }
+    }
+    setMobileMenuOpen(false);
+  };
+
   return (
     <header className={`site-header ${isScrolled ? 'site-header--scrolled' : ''}`}>
       <div className="container site-header__inner">
@@ -85,7 +104,7 @@ export default function Header({
         </nav>
 
         <div className="site-header__cta">
-          <a href={ctaHref} className="btn-gold">
+          <a href={ctaHref} className="btn-gold" onClick={handleCtaClick}>
             {ctaLabel}
           </a>
         </div>
@@ -116,7 +135,7 @@ export default function Header({
           <a
             href={ctaHref}
             className="btn-gold mobile-drawer__cta"
-            onClick={() => setMobileMenuOpen(false)}
+            onClick={handleCtaClick}
           >
             {ctaLabel}
           </a>

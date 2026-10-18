@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Target, TrendingUp, Sparkles } from 'lucide-react';
+import { Users, Target, TrendingUp, Sparkles, ArrowRight } from 'lucide-react';
 
 export default function AboutHero() {
   return (
@@ -23,6 +23,21 @@ export default function AboutHero() {
               At Interskill Staffing Solutions — Next Gem Hiring, we believe that the right
               talent can drive business growth, and the right opportunity can shape a career.
             </p>
+
+            <div style={{ display: 'flex', gap: '14px', marginBottom: '24px', flexWrap: 'wrap' }}>
+              <a
+                href="#contact"
+                className="btn-gold"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const el = document.getElementById('contact');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
+                <span>Connect With Us</span>
+                <ArrowRight size={15} />
+              </a>
+            </div>
 
             <div className="about-hero-benefits">
               <div className="about-benefit-item">

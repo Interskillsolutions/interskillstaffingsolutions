@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import FloatingActions from '../components/FloatingActions';
 import EmployerHero from '../components/employers/EmployerHero';
 import RecruitmentServices from '../components/employers/RecruitmentServices';
 import IndustriesAndHiringForm from '../components/employers/IndustriesAndHiringForm';
@@ -52,6 +53,9 @@ export default function Employers({ onNavigate }) {
 
       {/* 9. Shared Footer */}
       <Footer onNavigate={onNavigate} />
+
+      {/* QUICK ACTIONS & SCROLL TO TOP */}
+      <FloatingActions />
     </div>
   );
 }

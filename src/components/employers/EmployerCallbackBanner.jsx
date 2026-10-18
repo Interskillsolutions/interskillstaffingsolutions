@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
+import { getStored, setStored, STORAGE_KEYS } from '../../admin/adminStore';
+import { api } from '../../api/apiClient';
 
 export default function EmployerCallbackBanner() {
   const [formData, setFormData] = useState({ name: '', phone: '' });
+  const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -12,7 +15,7 @@ export default function EmployerCallbackBanner() {
     setErrorMsg('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name.trim()) {
       setErrorMsg('Please enter your name.');
@@ -23,7 +26,29 @@ export default function EmployerCallbackBanner() {
       return;
     }
 
-    setSubmitted(true);
+    setLoading(true);
+    setErrorMsg('');
+
+    const newCallback = {
+      id: `CB-${Date.now().toString().slice(-4)}`,
+      name: formData.name.trim(),
+      mobile: formData.phone.trim(),
+      topic: 'Employer Hiring Assistance',
+      source: 'For Employers Callback Banner',
+      status: 'Pending',
+      date: new Date().toLocaleString(),
+    };
+
+    try {
+      const existing = getStored(STORAGE_KEYS.CALLBACKS, []);
+      setStored(STORAGE_KEYS.CALLBACKS, [newCallback, ...existing]);
+      await api.createCallback(newCallback);
+    } catch (err) {
+      console.warn('Callback sync note (saved locally):', err.message);
+    } finally {
+      setLoading(false);
+      setSubmitted(true);
+    }
   };
 
   return (
@@ -115,9 +140,22 @@ export default function EmployerCallbackBanner() {
                   />
                 </div>
 
-                <button type="submit" className="emp-callback-banner__btn">
-                  <span>Request a Callback</span>
-                  <ArrowRight size={13} />
+                <button
+                  type="submit"
+                  className="emp-callback-banner__btn"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 size={13} className="spin-icon" style={{ animation: 'spin 1s linear infinite' }} />
+                      <span>Submitting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Request a Callback</span>
+                      <ArrowRight size={13} />
+                    </>
+                  )}
                 </button>
               </form>
             )}

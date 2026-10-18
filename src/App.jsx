@@ -12,6 +12,7 @@ import AboutMissionVision from './components/AboutMissionVision';
 import CallbackSection from './components/CallbackSection';
 import FAQSection from './components/FAQSection';
 import Footer from './components/Footer';
+import FloatingActions from './components/FloatingActions';
 
 // Pages
 import JobSeekers from './pages/JobSeekers';
@@ -128,7 +129,7 @@ export default function App() {
         <RecruitmentProcess />
 
         {/* SECTION 7: CURRENT JOB OPENINGS */}
-        <JobOpenings />
+        <JobOpenings onNavigate={navigateTo} />
 
         {/* SECTION 8: ADVISORY BOARD */}
         <AdvisoryBoard />
@@ -137,7 +138,7 @@ export default function App() {
         <Testimonials />
 
         {/* SECTION 10: ABOUT US, MISSION AND VISION */}
-        <AboutMissionVision />
+        <AboutMissionVision onNavigate={navigateTo} />
 
         {/* SECTION 11: CALLBACK BANNER */}
         <CallbackSection />
@@ -148,6 +149,9 @@ export default function App() {
 
       {/* SECTION 13: FOOTER */}
       <Footer onNavigate={navigateTo} />
+
+      {/* QUICK ACTIONS & SCROLL TO TOP */}
+      <FloatingActions />
     </div>
   );
 }

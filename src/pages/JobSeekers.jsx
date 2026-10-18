@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import FloatingActions from '../components/FloatingActions';
 import JobSeekerHero from '../components/job-seekers/JobSeekerHero';
 import JobSearchBar from '../components/job-seekers/JobSearchBar';
 import LatestJobs from '../components/job-seekers/LatestJobs';
@@ -81,7 +82,10 @@ export default function JobSeekers({ onNavigate }) {
 
       <main>
         {/* SECTION 6: HERO BANNER */}
-        <JobSeekerHero />
+        <JobSeekerHero
+          onOpenResume={() => setResumeModalOpen(true)}
+          onScrollToJobs={scrollToJobs}
+        />
 
         {/* SECTION 8: LATEST JOB OPENINGS */}
         <LatestJobs
@@ -104,6 +108,9 @@ export default function JobSeekers({ onNavigate }) {
 
       {/* FOOTER */}
       <Footer onNavigate={onNavigate} />
+
+      {/* QUICK ACTIONS & SCROLL TO TOP */}
+      <FloatingActions />
 
       {/* Interactive Modals */}
       <ResumeModal

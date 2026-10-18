@@ -64,8 +64,12 @@ export default function AboutContactSection({ onNavigate }) {
                 type="button"
                 className="btn-contact-gold"
                 onClick={() => {
-                  if (onNavigate) onNavigate('job-seekers');
-                  else window.location.hash = '#/job-seekers';
+                  if (onNavigate) {
+                    onNavigate('job-seekers');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  } else {
+                    window.location.hash = '#/job-seekers';
+                  }
                 }}
               >
                 <span>Find a Job</span>
@@ -76,8 +80,12 @@ export default function AboutContactSection({ onNavigate }) {
                 type="button"
                 className="btn-contact-outline"
                 onClick={() => {
-                  if (onNavigate) onNavigate('employers');
-                  else window.location.hash = '#/employers';
+                  if (onNavigate) {
+                    onNavigate('employers');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  } else {
+                    window.location.hash = '#/employers';
+                  }
                 }}
               >
                 <span>Hire Talent</span>

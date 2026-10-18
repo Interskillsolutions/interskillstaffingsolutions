@@ -1,7 +1,17 @@
 import React from 'react';
-import { Briefcase, Users, TrendingUp } from 'lucide-react';
+import { Briefcase, Users, TrendingUp, ArrowRight, FileUp } from 'lucide-react';
 
-export default function JobSeekerHero() {
+export default function JobSeekerHero({ onOpenResume, onScrollToJobs }) {
+  const handleScrollToJobs = (e) => {
+    if (e) e.preventDefault();
+    if (onScrollToJobs) {
+      onScrollToJobs();
+    } else {
+      const el = document.getElementById('latest-jobs');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section className="js-hero" id="job-seekers-hero">
       <div className="container js-hero__grid">
@@ -20,6 +30,26 @@ export default function JobSeekerHero() {
             resume and take the next step towards a brighter future with InterSkill
             Staffing Solutions — Next Gen Hiring.
           </p>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '24px', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              className="btn-gold"
+              onClick={handleScrollToJobs}
+            >
+              <span>Explore Open Roles</span>
+              <ArrowRight size={15} />
+            </button>
+
+            <button
+              type="button"
+              className="btn-outline-white"
+              onClick={onOpenResume}
+            >
+              <FileUp size={15} />
+              <span>Submit Your Resume</span>
+            </button>
+          </div>
 
           <div className="js-hero__benefits-row">
             <div className="js-hero__benefit-item">

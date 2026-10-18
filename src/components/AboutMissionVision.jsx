@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowRight, Eye, Sparkles } from 'lucide-react';
 
-export default function AboutMissionVision() {
+export default function AboutMissionVision({ onNavigate }) {
   return (
     <section className="about-section" id="about">
       <div className="container about-grid">
@@ -18,7 +18,17 @@ export default function AboutMissionVision() {
             services focus on understanding employer requirements, identifying relevant
             candidates and supporting the hiring process.
           </p>
-          <a href="#/about" className="link-gold">
+          <a
+            href="#/about"
+            className="link-gold"
+            onClick={(e) => {
+              if (onNavigate) {
+                e.preventDefault();
+                onNavigate('about');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+          >
             <span>Read More</span>
             <ArrowRight size={14} />
           </a>

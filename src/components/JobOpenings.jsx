@@ -2,14 +2,18 @@ import React, { useState } from 'react';
 import { ArrowRight, Briefcase, MapPin, Clock, Sparkles } from 'lucide-react';
 import { jobs } from '../data/jobs';
 
-export default function JobOpenings() {
+export default function JobOpenings({ onNavigate }) {
   const [appliedRole, setAppliedRole] = useState(null);
 
   const handleApply = (title) => {
     setAppliedRole(title);
     setTimeout(() => {
-      const el = document.getElementById('consultation');
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      if (onNavigate) {
+        onNavigate('job-seekers');
+      } else {
+        const el = document.getElementById('consultation');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }
     }, 600);
   };
 
@@ -28,7 +32,16 @@ export default function JobOpenings() {
               Explore exciting opportunities across various industries. Apply now and take the next step in your career.
             </p>
           </div>
-          <a href="#consultation" className="btn-outline-gold">
+          <a
+            href="#/job-seekers"
+            className="btn-outline-gold"
+            onClick={(e) => {
+              if (onNavigate) {
+                e.preventDefault();
+                onNavigate('job-seekers');
+              }
+            }}
+          >
             <span>View All Job Openings</span>
             <ArrowRight size={14} />
           </a>

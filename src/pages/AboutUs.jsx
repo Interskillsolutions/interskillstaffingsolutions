@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import FloatingActions from '../components/FloatingActions';
 
 // About Us Subcomponents
 import AboutHero from '../components/about/AboutHero';
@@ -57,6 +58,9 @@ export default function AboutUs({ onNavigate }) {
 
       {/* SECTION 10: SHARED FOOTER */}
       <Footer onNavigate={onNavigate} />
+
+      {/* QUICK ACTIONS & SCROLL TO TOP */}
+      <FloatingActions />
     </div>
   );
 }
