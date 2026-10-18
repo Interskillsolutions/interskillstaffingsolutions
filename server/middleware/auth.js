@@ -1,6 +1,14 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
+const getJwtSecret = () => {
+  const secret = (process.env.JWT_SECRET || '').trim();
+  if (!secret) {
+    throw new Error('JWT_SECRET is missing');
+  }
+  return secret;
+};
+
 // Verify JWT token from Authorization header
 export const protect = async (req, res, next) => {
   let token;
@@ -8,10 +16,8 @@ export const protect = async (req, res, next) => {
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
       token = req.headers.authorization.split(' ')[1];
-      const decoded = jwt.verify(
-        token,
-        process.env.JWT_SECRET || 'interskill_secret_key_123'
-      );
+      const secret = getJwtSecret();
+      const decoded = jwt.verify(token, secret);
 
       req.user = await User.findById(decoded.id).select('-password');
       if (!req.user) {
@@ -24,7 +30,10 @@ export const protect = async (req, res, next) => {
 
       return next();
     } catch (error) {
-      console.error('JWT Auth Error:', error.message);
+      if (error.message === 'JWT_SECRET is missing') {
+        console.error('Authentication configuration error: JWT_SECRET environment variable is missing.');
+        return res.status(500).json({ message: 'Server configuration error' });
+      }
       return res.status(401).json({ message: 'Not authorized, token failed or expired' });
     }
   }

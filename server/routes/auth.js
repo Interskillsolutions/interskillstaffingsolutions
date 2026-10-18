@@ -15,8 +15,17 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+const getJwtSecret = () => {
+  const secret = (process.env.JWT_SECRET || '').trim();
+  if (!secret) {
+    throw new Error('JWT_SECRET is missing');
+  }
+  return secret;
+};
+
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || 'interskill_secret_key_123', {
+  const secret = getJwtSecret();
+  return jwt.sign({ id }, secret, {
     expiresIn: '30d',
   });
 };
@@ -27,7 +36,8 @@ router.get('/setup-status', async (req, res) => {
     const adminCount = await User.countDocuments({ role: 'admin' });
     res.json({ initialized: adminCount > 0, totalUsers: adminCount });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('[Auth Setup Status Error]:', error.message);
+    res.status(500).json({ message: 'Unable to verify setup status' });
   }
 });
 
@@ -68,7 +78,15 @@ router.post('/setup', authLimiter, async (req, res) => {
       message: 'Primary administrator created successfully',
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    if (error.message === 'JWT_SECRET is missing') {
+      console.error('Authentication configuration error: JWT_SECRET environment variable is missing.');
+      return res.status(500).json({ message: 'Server configuration error' });
+    }
+    if (error.code === 11000) {
+      return res.status(400).json({ message: 'Email address is already in use' });
+    }
+    console.error('[Auth Setup Error]:', error.message);
+    return res.status(500).json({ message: 'An unexpected error occurred during setup. Please try again.' });
   }
 });
 
@@ -105,7 +123,12 @@ router.post('/login', authLimiter, async (req, res) => {
       token: generateToken(user._id),
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    if (error.message === 'JWT_SECRET is missing') {
+      console.error('Authentication configuration error: JWT_SECRET environment variable is missing.');
+      return res.status(500).json({ message: 'Server configuration error' });
+    }
+    console.error('[Auth Login Error]:', error.message);
+    return res.status(500).json({ message: 'An unexpected error occurred during login. Please try again.' });
   }
 });
 
@@ -144,7 +167,8 @@ router.put('/update-password', protect, async (req, res) => {
 
     res.json({ message: 'Password updated successfully' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('[Auth Password Update Error]:', error.message);
+    res.status(500).json({ message: 'An unexpected error occurred while updating password' });
   }
 });
 
