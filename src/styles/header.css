@@ -4,14 +4,14 @@
   z-index: 1000;
   background-color: var(--color-bg-page);
   border-bottom: 1px solid var(--color-border);
-  height: 64px;
+  height: 76px;
   display: flex;
   align-items: center;
-  transition: box-shadow var(--transition-fast);
+  transition: box-shadow var(--transition-fast), height var(--transition-fast);
 }
 
 .site-header--scrolled {
-  box-shadow: 0 4px 16px rgba(9, 35, 68, 0.06);
+  box-shadow: 0 4px 16px rgba(9, 35, 68, 0.08);
 }
 
 .site-header__inner {
@@ -25,13 +25,18 @@
 .site-logo {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 13px;
   text-decoration: none;
   user-select: none;
+  transition: transform 0.2s ease;
+}
+
+.site-logo:hover {
+  transform: scale(1.02);
 }
 
 .site-logo__emblem {
-  height: 38px;
+  height: 52px;
   width: auto;
   object-fit: contain;
 }
@@ -39,13 +44,13 @@
 .site-logo__text-group {
   display: flex;
   flex-direction: column;
-  line-height: 1.05;
+  line-height: 1.1;
 }
 
 .site-logo__title {
-  font-size: 15px;
+  font-size: 20px;
   font-weight: 800;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.8px;
   font-family: var(--font-sans);
 }
 
@@ -58,9 +63,9 @@
 }
 
 .site-logo__subtitle {
-  font-size: 8px;
+  font-size: 10.5px;
   font-weight: 700;
-  letter-spacing: 1.1px;
+  letter-spacing: 1.4px;
 }
 
 .site-logo__subtitle.text-navy-muted {
@@ -72,25 +77,25 @@
 }
 
 .site-logo__tagline {
-  font-size: 6.8px;
+  font-size: 8px;
   font-weight: 700;
-  letter-spacing: 0.9px;
+  letter-spacing: 1.1px;
   color: var(--color-gold);
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
 /* Nav Links */
 .site-nav {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 28px;
 }
 
 .site-nav__link {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   color: #2b4263;
-  padding: 6px 2px;
+  padding: 8px 2px;
   position: relative;
   transition: color var(--transition-fast);
   white-space: nowrap;
@@ -136,6 +141,18 @@
 }
 
 @media (max-width: 1060px) {
+  .site-header {
+    height: 70px;
+  }
+  .site-logo__emblem {
+    height: 46px;
+  }
+  .site-logo__title {
+    font-size: 18px;
+  }
+  .site-logo__subtitle {
+    font-size: 9.5px;
+  }
   .site-nav {
     display: none;
   }
@@ -148,7 +165,7 @@
   .mobile-drawer {
     display: block;
     position: absolute;
-    top: 64px;
+    top: 70px;
     left: 0;
     right: 0;
     background: #ffffff;
