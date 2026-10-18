@@ -1,11 +1,12 @@
 import express from 'express';
+import https from 'https';
 import multer from 'multer';
 import rateLimit from 'express-rate-limit';
 import cloudinary from '../config/cloudinary.js';
 import Applicant from '../models/Applicant.js';
 import Job from '../models/Job.js';
 import { protect } from '../middleware/auth.js';
-import { saveUploadedFile } from '../utils/fileStorage.js';
+import { saveUploadedFile, getSignedCloudinaryUrl } from '../utils/fileStorage.js';
 
 const router = express.Router();
 
@@ -25,13 +26,13 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter,
 });
 
 const applyLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: 20,
   message: { message: 'Too many applications submitted. Please try again later.' },
 });
 
@@ -46,22 +47,38 @@ router.get('/', protect, async (req, res) => {
 });
 
 // POST new applicant with optional Cloudinary resume upload (Public)
-router.post('/', applyLimiter, upload.single('resume'), async (req, res) => {
-  try {
-    const { jobId, jobTitle, candidateName, email, phone, experience, currentCompany } = req.body;
-    if (!candidateName || !email || !phone) {
-      return res.status(400).json({ message: 'Name, email, and phone are required' });
-    }
+router.post(
+  '/',
+  applyLimiter,
+  (req, res, next) => {
+    upload.single('resume')(req, res, (err) => {
+      if (err instanceof multer.MulterError) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return res.status(400).json({ message: 'File is too large. Resume must be less than 5MB.' });
+        }
+        return res.status(400).json({ message: `Upload error: ${err.message}` });
+      } else if (err) {
+        return res.status(400).json({ message: err.message });
+      }
+      next();
+    });
+  },
+  async (req, res) => {
+    try {
+      const { jobId, jobTitle, candidateName, email, phone, experience, currentCompany } = req.body;
+      if (!candidateName || !email || !phone) {
+        return res.status(400).json({ message: 'Name, email, and phone are required' });
+      }
 
-    let resumeUrl = '';
-    let resumeFileName = req.file ? req.file.originalname : 'Candidate_Resume.pdf';
+      let resumeUrl = '';
+      let resumeFileName = req.file ? req.file.originalname : 'Candidate_Resume.pdf';
 
-    // If file provided, save to VPS disk (or Cloudinary if configured)
-    if (req.file) {
-      const stored = await saveUploadedFile(req.file, 'resumes', req);
-      resumeUrl = stored.url;
-      resumeFileName = stored.fileName;
-    }
+      // Save directly to Cloudinary
+      if (req.file) {
+        const stored = await saveUploadedFile(req.file, 'resumes');
+        resumeUrl = stored.url;
+        resumeFileName = stored.fileName;
+      }
 
     const count = await Applicant.countDocuments();
     const applicantId = `APP-${501 + count}`;
@@ -156,6 +173,46 @@ router.delete('/:id', protect, async (req, res) => {
     res.json({ message: 'Applicant deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+});
+
+// GET file stream / proxy for in-panel preview and download
+router.get('/:id/file', async (req, res) => {
+  try {
+    const query = req.params.id.length === 24
+      ? { $or: [{ _id: req.params.id }, { applicantId: req.params.id }] }
+      : { applicantId: req.params.id };
+
+    const applicant = await Applicant.findOne(query);
+    if (!applicant || !applicant.resumeUrl) {
+      return res.status(404).send('Document not found');
+    }
+
+    const signedUrl = getSignedCloudinaryUrl(applicant.resumeUrl);
+    const targetUrl = signedUrl || applicant.resumeUrl;
+    const isDocx = applicant.resumeFileName?.toLowerCase().endsWith('.docx') || applicant.resumeFileName?.toLowerCase().endsWith('.doc');
+    const contentType = isDocx
+      ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      : 'application/pdf';
+    const dispositionType = req.query.download === '1' ? 'attachment' : 'inline';
+
+    https.get(targetUrl, (cloudRes) => {
+      if (cloudRes.statusCode === 200) {
+        res.setHeader('Content-Type', cloudRes.headers['content-type'] || contentType);
+        res.setHeader(
+          'Content-Disposition',
+          `${dispositionType}; filename="${encodeURIComponent(applicant.resumeFileName || 'resume.pdf')}"`
+        );
+        cloudRes.pipe(res);
+      } else {
+        res.redirect(targetUrl);
+      }
+    }).on('error', (err) => {
+      console.error('[Cloudinary Proxy Error]:', err);
+      res.redirect(applicant.resumeUrl);
+    });
+  } catch (error) {
+    res.status(500).send(error.message);
   }
 });
 

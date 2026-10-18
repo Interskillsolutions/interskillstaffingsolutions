@@ -410,4 +410,15 @@ export const api = {
     const base = API_BASE.replace('/api', '');
     return `${base}${url.startsWith('/') ? '' : '/'}${url}`;
   },
+  getResumeFileUrl: (candidate, download = false) => {
+    if (!candidate) return '';
+    const candidateId = candidate._id || candidate.id || candidate.resumeId || candidate.applicantId;
+    const isApplicant = candidate._type === 'Job Applicant' || !!candidate.jobId || !!candidate.applicantId;
+    const path = isApplicant ? 'applicants' : 'resumes';
+    if (candidateId) {
+      return `${API_BASE}/${path}/${candidateId}/file${download ? '?download=1' : ''}`;
+    }
+    const rawUrl = candidate.fileUrl || candidate.resumeUrl || candidate._url || '';
+    return api.resolveFileUrl(rawUrl);
+  },
 };

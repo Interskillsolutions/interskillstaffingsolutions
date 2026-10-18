@@ -384,6 +384,11 @@
   color: #2563EB;
 }
 
+.adm-kpi-card__icon-box--purple {
+  background: #F3E8FF;
+  color: #7E22CE;
+}
+
 /* Card Sections */
 .adm-card {
   background: #FFFFFF;

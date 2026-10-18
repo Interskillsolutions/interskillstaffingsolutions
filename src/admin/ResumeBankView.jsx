@@ -7,13 +7,16 @@ import {
   Phone,
   Mail,
   UserCheck,
+  Eye,
 } from 'lucide-react';
 import { exportToCSV } from './adminStore';
 import { api } from '../api/apiClient';
+import ResumeViewerModal, { downloadDocument } from './ResumeViewerModal';
 
 export default function ResumeBankView({ resumes, onDeleteResume }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
+  const [viewingCandidate, setViewingCandidate] = useState(null);
 
   const filtered = resumes.filter((r) => {
     const matchesSearch =
@@ -117,47 +120,54 @@ export default function ResumeBankView({ resumes, onDeleteResume }) {
                     </td>
                     <td style={{ fontSize: '12.5px' }}>{item.experience || 'Not specified'}</td>
                     <td>
-                      {item.fileUrl ? (
-                        <a
-                          href={api.resolveFileUrl(item.fileUrl)}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                        <button
+                          type="button"
+                          onClick={() => setViewingCandidate(item)}
                           style={{
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: '6px',
+                            gap: '5px',
                             color: '#92400E',
                             fontSize: '12px',
                             background: '#FEF3C7',
-                            padding: '4px 9px',
-                            borderRadius: '4px',
+                            border: '1px solid #FDE68A',
+                            padding: '4px 10px',
+                            borderRadius: '5px',
                             fontWeight: 600,
-                            textDecoration: 'none',
+                            cursor: 'pointer',
                           }}
-                          title="Open attached resume"
+                          title="View resume inside admin panel"
                         >
-                          <FileText size={13} color="#B45309" />
+                          <Eye size={13} color="#B45309" />
                           <span>{item.fileName || 'View Resume'}</span>
-                          <Download size={11} style={{ marginLeft: '2px' }} />
-                        </a>
-                      ) : (
-                        <div
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            color: '#071D3A',
-                            fontSize: '12px',
-                            background: '#F1F5F9',
-                            padding: '4px 9px',
-                            borderRadius: '4px',
-                            fontWeight: 500,
-                          }}
-                        >
-                          <FileText size={13} color="#64748B" />
-                          <span>{item.fileName || 'Candidate_Resume.pdf'}</span>
-                        </div>
-                      )}
+                        </button>
+
+                        {item.fileUrl && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              downloadDocument(api.resolveFileUrl(item.fileUrl), item.fileName)
+                            }
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: '26px',
+                              height: '26px',
+                              color: '#071D3A',
+                              background: '#F1F5F9',
+                              border: '1px solid #CBD5E1',
+                              borderRadius: '5px',
+                              cursor: 'pointer',
+                              padding: 0,
+                            }}
+                            title="Download document file directly to your computer"
+                          >
+                            <Download size={13} />
+                          </button>
+                        )}
+                      </div>
                     </td>
                     <td>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
@@ -207,6 +217,13 @@ export default function ResumeBankView({ resumes, onDeleteResume }) {
           </table>
         </div>
       </div>
+
+      {/* In-Panel Resume Viewer Modal */}
+      <ResumeViewerModal
+        isOpen={!!viewingCandidate}
+        onClose={() => setViewingCandidate(null)}
+        candidate={viewingCandidate}
+      />
     </div>
   );
 }

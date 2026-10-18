@@ -18,17 +18,8 @@ import TeamMember from './models/TeamMember.js';
 import SiteStats from './models/SiteStats.js';
 import Testimonial from './models/Testimonial.js';
 import Faq from './models/Faq.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { ensureUploadDirectories } from './utils/fileStorage.js';
 
 dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Ensure VPS disk upload folders exist
-ensureUploadDirectories();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -37,9 +28,6 @@ const PORT = process.env.PORT || 5000;
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Serve uploaded files directly from VPS local disk
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Seed helper if DB is fresh
 const seedInitialDatabase = async () => {
@@ -284,10 +272,14 @@ app.get('/api/health', (req, res) => {
 });
 
 // Start Server & Connect MongoDB Atlas
-connectDB().then(() => {
-  seedInitialDatabase();
-  app.listen(PORT, () => {
-    console.log(`🚀 [Interskill Backend API running on port ${PORT}]`);
-    console.log(`📡 [Connected to MongoDB Atlas: interskillDB]`);
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  connectDB().then(() => {
+    seedInitialDatabase();
+    app.listen(PORT, () => {
+      console.log(`🚀 [Interskill Backend API running on port ${PORT}]`);
+      console.log(`📡 [Connected to MongoDB Atlas: interskillDB]`);
+    });
   });
-});
+}
+
+export default app;

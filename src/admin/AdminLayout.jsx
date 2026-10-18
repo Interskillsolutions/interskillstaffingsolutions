@@ -104,7 +104,7 @@ export default function AdminLayout({ onNavigate }) {
 
       setMongoConnected(true);
 
-      if (remoteLeads.status === 'fulfilled' && remoteLeads.value?.length) {
+      if (remoteLeads.status === 'fulfilled' && Array.isArray(remoteLeads.value)) {
         const mapped = remoteLeads.value.map((l) => ({
           id: l.leadId || l._id,
           name: l.name,
@@ -120,11 +120,15 @@ export default function AdminLayout({ onNavigate }) {
           assignedTo: l.assignedTo || 'Unassigned',
           date: l.formattedDate || new Date(l.createdAt).toLocaleString(),
         }));
-        setLeads(mapped);
-        setStored(STORAGE_KEYS.EMPLOYER_LEADS, mapped);
+        const remoteIds = new Set(mapped.map((m) => m.id));
+        const localCurrent = getStored(STORAGE_KEYS.EMPLOYER_LEADS, []);
+        const unSynced = localCurrent.filter((loc) => !remoteIds.has(loc.id));
+        const merged = [...mapped, ...unSynced];
+        setLeads(merged);
+        setStored(STORAGE_KEYS.EMPLOYER_LEADS, merged);
       }
 
-      if (remoteCallbacks.status === 'fulfilled' && remoteCallbacks.value?.length) {
+      if (remoteCallbacks.status === 'fulfilled' && Array.isArray(remoteCallbacks.value)) {
         const mapped = remoteCallbacks.value.map((c) => ({
           id: c.callbackId || c._id,
           name: c.name,
@@ -136,11 +140,15 @@ export default function AdminLayout({ onNavigate }) {
           priority: c.priority || 'Urgent',
           date: c.formattedDate || new Date(c.createdAt).toLocaleString(),
         }));
-        setCallbacks(mapped);
-        setStored(STORAGE_KEYS.CALLBACKS, mapped);
+        const remoteIds = new Set(mapped.map((m) => m.id));
+        const localCurrent = getStored(STORAGE_KEYS.CALLBACKS, []);
+        const unSynced = localCurrent.filter((loc) => !remoteIds.has(loc.id));
+        const merged = [...mapped, ...unSynced];
+        setCallbacks(merged);
+        setStored(STORAGE_KEYS.CALLBACKS, merged);
       }
 
-      if (remoteConsultations.status === 'fulfilled' && remoteConsultations.value?.length) {
+      if (remoteConsultations.status === 'fulfilled' && Array.isArray(remoteConsultations.value)) {
         const mapped = remoteConsultations.value.map((con) => ({
           id: con.consultationId || con._id,
           name: con.name,
@@ -152,11 +160,15 @@ export default function AdminLayout({ onNavigate }) {
           notes: con.notes || '',
           date: con.formattedDate || new Date(con.createdAt).toLocaleString(),
         }));
-        setConsultations(mapped);
-        setStored(STORAGE_KEYS.CONSULTATIONS, mapped);
+        const remoteIds = new Set(mapped.map((m) => m.id));
+        const localCurrent = getStored(STORAGE_KEYS.CONSULTATIONS, []);
+        const unSynced = localCurrent.filter((loc) => !remoteIds.has(loc.id));
+        const merged = [...mapped, ...unSynced];
+        setConsultations(merged);
+        setStored(STORAGE_KEYS.CONSULTATIONS, merged);
       }
 
-      if (remoteJobs.status === 'fulfilled' && remoteJobs.value?.length) {
+      if (remoteJobs.status === 'fulfilled' && Array.isArray(remoteJobs.value) && remoteJobs.value.length) {
         const mapped = remoteJobs.value.map((j) => ({
           id: j.jobId || j._id,
           title: j.title,
@@ -175,7 +187,7 @@ export default function AdminLayout({ onNavigate }) {
         setStored(STORAGE_KEYS.JOBS, mapped);
       }
 
-      if (remoteApplicants.status === 'fulfilled' && remoteApplicants.value?.length) {
+      if (remoteApplicants.status === 'fulfilled' && Array.isArray(remoteApplicants.value)) {
         const mapped = remoteApplicants.value.map((a) => ({
           id: a.applicantId || a._id,
           jobId: a.jobId,
@@ -191,11 +203,18 @@ export default function AdminLayout({ onNavigate }) {
           resumeUrl: a.resumeUrl,
           date: a.formattedDate || new Date(a.createdAt).toLocaleString(),
         }));
-        setApplicants(mapped);
-        setStored(STORAGE_KEYS.APPLICANTS, mapped);
+        const remoteIds = new Set(mapped.map((m) => m.id));
+        const remoteEmails = new Set(mapped.map((m) => (m.email || '').toLowerCase()));
+        const localCurrent = getStored(STORAGE_KEYS.APPLICANTS, []);
+        const unSynced = localCurrent.filter(
+          (loc) => !remoteIds.has(loc.id) && !remoteEmails.has((loc.email || '').toLowerCase())
+        );
+        const merged = [...mapped, ...unSynced];
+        setApplicants(merged);
+        setStored(STORAGE_KEYS.APPLICANTS, merged);
       }
 
-      if (remoteResumes.status === 'fulfilled' && remoteResumes.value?.length) {
+      if (remoteResumes.status === 'fulfilled' && Array.isArray(remoteResumes.value)) {
         const mapped = remoteResumes.value.map((r) => ({
           id: r.resumeId || r._id,
           candidateName: r.candidateName,
@@ -209,8 +228,15 @@ export default function AdminLayout({ onNavigate }) {
           notes: r.notes || '',
           date: r.formattedDate || new Date(r.createdAt).toLocaleString(),
         }));
-        setResumes(mapped);
-        setStored(STORAGE_KEYS.RESUMES, mapped);
+        const remoteIds = new Set(mapped.map((m) => m.id));
+        const remoteEmails = new Set(mapped.map((m) => (m.email || '').toLowerCase()));
+        const localCurrent = getStored(STORAGE_KEYS.RESUMES, []);
+        const unSynced = localCurrent.filter(
+          (loc) => !remoteIds.has(loc.id) && !remoteEmails.has((loc.email || '').toLowerCase())
+        );
+        const merged = [...mapped, ...unSynced];
+        setResumes(merged);
+        setStored(STORAGE_KEYS.RESUMES, merged);
       }
 
       if (remoteTeam.status === 'fulfilled' && remoteTeam.value?.length) {
@@ -253,6 +279,14 @@ export default function AdminLayout({ onNavigate }) {
     if (isAuthenticated) {
       fetchMongoData();
     }
+
+    const handleSubmissionEvent = () => {
+      fetchMongoData();
+    };
+    window.addEventListener('interskill:submission-saved', handleSubmissionEvent);
+    return () => {
+      window.removeEventListener('interskill:submission-saved', handleSubmissionEvent);
+    };
   }, [isAuthenticated, fetchMongoData]);
 
   // Handlers for state updates with MongoDB Atlas synchronization
@@ -722,6 +756,7 @@ export default function AdminLayout({ onNavigate }) {
               applicants={applicants}
               callbacks={callbacks}
               consultations={consultations}
+              resumes={resumes}
               onNavigateTab={handleNavigateTab}
               onUpdateLeadStatus={handleUpdateLeadStatus}
               onUpdateCallbackStatus={handleUpdateCallbackStatus}

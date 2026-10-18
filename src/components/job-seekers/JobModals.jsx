@@ -21,6 +21,11 @@ export function ResumeModal({ isOpen, onClose }) {
       return;
     }
 
+    if (file && file.size > 5 * 1024 * 1024) {
+      setError('Resume file size must be less than 5MB.');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
@@ -63,11 +68,15 @@ export function ResumeModal({ isOpen, onClose }) {
           fileName: 'Candidate_Resume.pdf',
         });
       }
+      setSubmitted(true);
+      try {
+        window.dispatchEvent(new CustomEvent('interskill:submission-saved'));
+      } catch (e) {}
     } catch (err) {
-      console.warn('API submission notice (saved locally):', err.message);
+      console.error('API submission error:', err);
+      setError(err.message || 'Failed to upload resume. Please try again.');
     } finally {
       setLoading(false);
-      setSubmitted(true);
     }
   };
 
@@ -182,13 +191,23 @@ export function ResumeModal({ isOpen, onClose }) {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Upload Resume (PDF, DOCX)</label>
+                <label className="form-label">Upload Resume (PDF, DOCX — Max 5MB)</label>
                 <input
                   type="file"
                   accept=".pdf,.doc,.docx"
                   className="form-input"
                   style={{ paddingTop: '7px' }}
-                  onChange={(e) => setFile(e.target.files[0])}
+                  onChange={(e) => {
+                    const selected = e.target.files[0];
+                    if (selected && selected.size > 5 * 1024 * 1024) {
+                      setError('File size exceeds 5MB limit. Please choose a smaller resume.');
+                      setFile(null);
+                      e.target.value = '';
+                      return;
+                    }
+                    setError('');
+                    setFile(selected || null);
+                  }}
                 />
               </div>
             </div>
@@ -235,6 +254,11 @@ export function ApplyJobModal({ job, isOpen, onClose }) {
     e.preventDefault();
     if (!name.trim() || !email.trim() || !phone.trim()) {
       setError('Please provide your name, email, and contact number.');
+      return;
+    }
+
+    if (file && file.size > 5 * 1024 * 1024) {
+      setError('Resume file size must be less than 5MB.');
       return;
     }
 
@@ -287,11 +311,15 @@ export function ApplyJobModal({ job, isOpen, onClose }) {
           resumeFileName: `${name.trim().replace(/\s+/g, '_')}_Resume.pdf`,
         });
       }
+      setSubmitted(true);
+      try {
+        window.dispatchEvent(new CustomEvent('interskill:submission-saved'));
+      } catch (e) {}
     } catch (err) {
-      console.warn('API submission notice (saved locally):', err.message);
+      console.error('API application submission error:', err);
+      setError(err.message || 'Failed to submit application. Please try again.');
     } finally {
       setLoading(false);
-      setSubmitted(true);
     }
   };
 
@@ -394,13 +422,23 @@ export function ApplyJobModal({ job, isOpen, onClose }) {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Attach Resume (Optional PDF, DOCX)</label>
+                <label className="form-label">Attach Resume (PDF, DOCX — Max 5MB)</label>
                 <input
                   type="file"
                   accept=".pdf,.doc,.docx"
                   className="form-input"
                   style={{ paddingTop: '7px' }}
-                  onChange={(e) => setFile(e.target.files[0])}
+                  onChange={(e) => {
+                    const selected = e.target.files[0];
+                    if (selected && selected.size > 5 * 1024 * 1024) {
+                      setError('File size exceeds 5MB limit. Please choose a smaller resume.');
+                      setFile(null);
+                      e.target.value = '';
+                      return;
+                    }
+                    setError('');
+                    setFile(selected || null);
+                  }}
                 />
               </div>
             </div>
