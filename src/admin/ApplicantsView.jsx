@@ -10,6 +10,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { exportToCSV } from './adminStore';
+import { api } from '../api/apiClient';
 
 export default function ApplicantsView({
   applicants,
@@ -168,7 +169,7 @@ export default function ApplicantsView({
                     <td>
                       {app.resumeUrl ? (
                         <a
-                          href={app.resumeUrl}
+                          href={api.resolveFileUrl(app.resumeUrl)}
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{

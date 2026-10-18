@@ -3,7 +3,9 @@ import TeamMember from '../models/TeamMember.js';
 import SiteStats from '../models/SiteStats.js';
 import Testimonial from '../models/Testimonial.js';
 import Faq from '../models/Faq.js';
+import multer from 'multer';
 import { protect } from '../middleware/auth.js';
+import { saveUploadedFile } from '../utils/fileStorage.js';
 
 const router = express.Router();
 
@@ -179,6 +181,35 @@ router.post('/faqs', protect, async (req, res) => {
     res.status(201).json(saved);
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// CMS DIRECT PHOTO UPLOAD (VPS Disk & Optional Cloudinary)
+// ---------------------------------------------------------------------------
+const imageFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image/') || file.originalname.match(/\.(jpg|jpeg|png|webp|svg)$/i)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Invalid image file. Only JPG, PNG, WEBP, and SVG images are allowed.'), false);
+  }
+};
+
+const imageUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 8 * 1024 * 1024 }, // 8MB
+  fileFilter: imageFilter,
+});
+
+router.post('/upload', protect, imageUpload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No image file uploaded' });
+    }
+    const result = await saveUploadedFile(req.file, 'images', req);
+    res.json({ url: result.url, fileName: result.fileName });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 });
 

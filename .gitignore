@@ -11,6 +11,12 @@ node_modules
 dist
 dist-ssr
 *.local
+# Uploads
+uploads
+server/uploads
+!server/uploads/.gitkeep
+
+# Environment
 .env
 .env.*
 !.env.example

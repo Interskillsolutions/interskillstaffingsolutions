@@ -394,4 +394,20 @@ export const api = {
     });
     return handleResponse(res);
   },
+  uploadImage: async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    const res = await fetch(`${API_BASE}/cms/upload`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: formData,
+    });
+    return handleResponse(res);
+  },
+  resolveFileUrl: (url) => {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    const base = API_BASE.replace('/api', '');
+    return `${base}${url.startsWith('/') ? '' : '/'}${url}`;
+  },
 };

@@ -9,6 +9,7 @@ import {
   UserCheck,
 } from 'lucide-react';
 import { exportToCSV } from './adminStore';
+import { api } from '../api/apiClient';
 
 export default function ResumeBankView({ resumes, onDeleteResume }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -118,7 +119,7 @@ export default function ResumeBankView({ resumes, onDeleteResume }) {
                     <td>
                       {item.fileUrl ? (
                         <a
-                          href={item.fileUrl}
+                          href={api.resolveFileUrl(item.fileUrl)}
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{

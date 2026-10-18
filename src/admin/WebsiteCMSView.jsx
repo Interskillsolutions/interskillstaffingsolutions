@@ -11,7 +11,9 @@ import {
   HelpCircle,
   Star,
   Globe,
+  Upload,
 } from 'lucide-react';
+import { api } from '../api/apiClient';
 
 export default function WebsiteCMSView({
   team = [],
@@ -34,6 +36,7 @@ export default function WebsiteCMSView({
   const [teamList, setTeamList] = useState(team);
   const [editingMember, setEditingMember] = useState(null);
   const [memberForm, setMemberForm] = useState({ name: '', role: '', image: '', quote: '' });
+  const [uploadingMemberPhoto, setUploadingMemberPhoto] = useState(false);
 
   // 3. Testimonials state
   const [testimonialsList, setTestimonialsList] = useState(testimonials);
@@ -45,6 +48,7 @@ export default function WebsiteCMSView({
     rating: 5,
     image: '',
   });
+  const [uploadingTestimonialPhoto, setUploadingTestimonialPhoto] = useState(false);
 
   // 4. FAQs state
   const [faqList, setFaqList] = useState(faqs);
@@ -55,6 +59,40 @@ export default function WebsiteCMSView({
     setFeedbackMsg(msg);
     setSavedFeedback(true);
     setTimeout(() => setSavedFeedback(false), 3500);
+  };
+
+  const handleUploadMemberPhoto = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingMemberPhoto(true);
+    try {
+      const res = await api.uploadImage(file);
+      if (res.url) {
+        setMemberForm((prev) => ({ ...prev, image: res.url }));
+        triggerFeedback('Photo uploaded successfully to server!');
+      }
+    } catch (err) {
+      alert('Photo upload failed: ' + err.message);
+    } finally {
+      setUploadingMemberPhoto(false);
+    }
+  };
+
+  const handleUploadTestimonialPhoto = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingTestimonialPhoto(true);
+    try {
+      const res = await api.uploadImage(file);
+      if (res.url) {
+        setTestimonialForm((prev) => ({ ...prev, image: res.url }));
+        triggerFeedback('Avatar uploaded successfully to server!');
+      }
+    } catch (err) {
+      alert('Photo upload failed: ' + err.message);
+    } finally {
+      setUploadingTestimonialPhoto(false);
+    }
   };
 
   // --- Handlers: Metrics ---
@@ -487,16 +525,43 @@ export default function WebsiteCMSView({
                 </div>
 
                 <div className="adm-form-group" style={{ marginBottom: '14px' }}>
-                  <label className="adm-form-label">Photo Image Path or URL</label>
-                  <input
-                    type="text"
-                    className="adm-form-input"
-                    value={memberForm.image}
-                    onChange={(e) =>
-                      setMemberForm({ ...memberForm, image: e.target.value })
-                    }
-                    placeholder="/images/team-priya.jpg"
-                  />
+                  <label className="adm-form-label">Photo Image (Upload or path)</label>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      className="adm-form-input"
+                      value={memberForm.image}
+                      onChange={(e) =>
+                        setMemberForm({ ...memberForm, image: e.target.value })
+                      }
+                      placeholder="/images/team-priya.jpg or upload below"
+                      style={{ flex: 1 }}
+                    />
+                    <label
+                      className="adm-btn-action adm-btn-secondary"
+                      style={{ cursor: 'pointer', margin: 0, whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                    >
+                      <Upload size={13} /> {uploadingMemberPhoto ? 'Uploading...' : 'Upload Photo'}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={handleUploadMemberPhoto}
+                        disabled={uploadingMemberPhoto}
+                      />
+                    </label>
+                  </div>
+                  {memberForm.image && (
+                    <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <img
+                        src={api.resolveFileUrl(memberForm.image)}
+                        alt="Preview"
+                        style={{ width: '38px', height: '38px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #CBD5E1' }}
+                        onError={(e) => { e.currentTarget.src = '/images/team-priya.jpg'; }}
+                      />
+                      <span style={{ fontSize: '11px', color: '#64748B' }}>Preview: {memberForm.image}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="adm-form-group" style={{ marginBottom: '14px' }}>
@@ -648,14 +713,41 @@ export default function WebsiteCMSView({
 
                 <div className="adm-form-grid-2col" style={{ marginBottom: '14px' }}>
                   <div className="adm-form-group">
-                    <label className="adm-form-label">Avatar Image URL</label>
-                    <input
-                      type="text"
-                      className="adm-form-input"
-                      value={testimonialForm.image}
-                      onChange={(e) => setTestimonialForm({ ...testimonialForm, image: e.target.value })}
-                      placeholder="/images/testimonial-rohit.png"
-                    />
+                    <label className="adm-form-label">Avatar Image (Upload or path)</label>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <input
+                        type="text"
+                        className="adm-form-input"
+                        value={testimonialForm.image}
+                        onChange={(e) => setTestimonialForm({ ...testimonialForm, image: e.target.value })}
+                        placeholder="/images/testimonial-rohit.png"
+                        style={{ flex: 1 }}
+                      />
+                      <label
+                        className="adm-btn-action adm-btn-secondary"
+                        style={{ cursor: 'pointer', margin: 0, whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                      >
+                        <Upload size={13} /> {uploadingTestimonialPhoto ? 'Uploading...' : 'Upload Photo'}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          style={{ display: 'none' }}
+                          onChange={handleUploadTestimonialPhoto}
+                          disabled={uploadingTestimonialPhoto}
+                        />
+                      </label>
+                    </div>
+                    {testimonialForm.image && (
+                      <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <img
+                          src={api.resolveFileUrl(testimonialForm.image)}
+                          alt="Preview"
+                          style={{ width: '38px', height: '38px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #CBD5E1' }}
+                          onError={(e) => { e.currentTarget.src = '/images/testimonial-rohit.png'; }}
+                        />
+                        <span style={{ fontSize: '11px', color: '#64748B' }}>Preview: {testimonialForm.image}</span>
+                      </div>
+                    )}
                   </div>
                   <div className="adm-form-group">
                     <label className="adm-form-label">Star Rating (1 - 5)</label>

@@ -158,7 +158,7 @@ export default function AdvisoryBoard() {
                 }}
               >
                 <img
-                  src={member.image}
+                  src={api.resolveFileUrl(member.image)}
                   alt={member.name}
                   style={{
                     width: '100%',

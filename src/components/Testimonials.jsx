@@ -39,7 +39,7 @@ export default function Testimonials() {
           {items.map((item) => (
             <div key={item.id} className="testimonial-card">
               <img
-                src={item.image}
+                src={api.resolveFileUrl(item.image)}
                 alt={item.name}
                 className="testimonial-card__avatar"
               />

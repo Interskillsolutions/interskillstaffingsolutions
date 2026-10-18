@@ -5,6 +5,7 @@ import cloudinary from '../config/cloudinary.js';
 import Applicant from '../models/Applicant.js';
 import Job from '../models/Job.js';
 import { protect } from '../middleware/auth.js';
+import { saveUploadedFile } from '../utils/fileStorage.js';
 
 const router = express.Router();
 
@@ -55,24 +56,11 @@ router.post('/', applyLimiter, upload.single('resume'), async (req, res) => {
     let resumeUrl = '';
     let resumeFileName = req.file ? req.file.originalname : 'Candidate_Resume.pdf';
 
-    // If file provided, upload to Cloudinary securely
+    // If file provided, save to VPS disk (or Cloudinary if configured)
     if (req.file) {
-      const uploadPromise = new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          {
-            folder: 'interskill/resumes',
-            resource_type: 'auto',
-          },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
-        );
-        stream.end(req.file.buffer);
-      });
-
-      const uploadResult = await uploadPromise;
-      resumeUrl = uploadResult.secure_url;
+      const stored = await saveUploadedFile(req.file, 'resumes', req);
+      resumeUrl = stored.url;
+      resumeFileName = stored.fileName;
     }
 
     const count = await Applicant.countDocuments();
