@@ -16,6 +16,7 @@ import Footer from './components/Footer';
 // Pages
 import JobSeekers from './pages/JobSeekers';
 import Employers from './pages/Employers';
+import AboutUs from './pages/AboutUs';
 import AdminLayout from './admin/AdminLayout';
 
 import './styles/variables.css';
@@ -35,6 +36,9 @@ export default function App() {
     if (hash.includes('employer') || path.includes('employer')) {
       return 'employers';
     }
+    if (hash.includes('about') || path.includes('about')) {
+      return 'about';
+    }
     return 'home';
   };
 
@@ -50,6 +54,8 @@ export default function App() {
         setCurrentPage('job-seekers');
       } else if (hash.includes('employer') || path.includes('employer')) {
         setCurrentPage('employers');
+      } else if (hash.includes('about') || path.includes('about')) {
+        setCurrentPage('about');
       } else if (hash === '' || hash === '#home' || hash === '#/' || path === '/') {
         setCurrentPage('home');
       }
@@ -69,6 +75,8 @@ export default function App() {
       window.location.hash = '#/job-seekers';
     } else if (page === 'employers') {
       window.location.hash = '#/employers';
+    } else if (page === 'about') {
+      window.location.hash = '#/about';
     } else if (page === 'admin') {
       window.location.hash = '#/admin';
     } else {
@@ -87,6 +95,10 @@ export default function App() {
 
   if (currentPage === 'employers') {
     return <Employers onNavigate={navigateTo} />;
+  }
+
+  if (currentPage === 'about') {
+    return <AboutUs onNavigate={navigateTo} />;
   }
 
   return (

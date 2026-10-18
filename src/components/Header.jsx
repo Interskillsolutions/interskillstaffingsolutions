@@ -22,7 +22,7 @@ export default function Header({
 
   const navLinks = [
     { label: 'Home', id: 'home', href: '#home', page: 'home' },
-    { label: 'About Us', id: 'about', href: '#about' },
+    { label: 'About Us', id: 'about', href: '#/about', page: 'about' },
     { label: 'Industries', id: 'industries', href: '#industries' },
     { label: 'For Job Seekers', id: 'job-seekers', href: '#job-seekers', page: 'job-seekers' },
     { label: 'For Employers', id: 'employers', href: '#/employers', page: 'employers' },

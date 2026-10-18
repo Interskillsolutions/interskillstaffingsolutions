@@ -105,9 +105,9 @@ export default function Footer({ onNavigate }) {
                   Home
                 </a>
                 <a
-                  href="#about"
+                  href="#/about"
                   className="footer-nav-link"
-                  onClick={(e) => handleNav(e, null, '#about')}
+                  onClick={(e) => handleNav(e, 'about')}
                 >
                   About Us
                 </a>

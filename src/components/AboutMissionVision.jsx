@@ -18,7 +18,7 @@ export default function AboutMissionVision() {
             services focus on understanding employer requirements, identifying relevant
             candidates and supporting the hiring process.
           </p>
-          <a href="#consultation" className="link-gold">
+          <a href="#/about" className="link-gold">
             <span>Read More</span>
             <ArrowRight size={14} />
           </a>
