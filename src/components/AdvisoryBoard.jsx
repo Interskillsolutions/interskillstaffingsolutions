@@ -130,7 +130,7 @@ export default function AdvisoryBoard() {
         >
           {currentTeam.map((member) => (
             <div
-              key={member.id}
+              key={member.id || member._id || member.memberId}
               style={{
                 backgroundColor: '#FFFFFF',
                 border: '1px solid var(--color-border)',
