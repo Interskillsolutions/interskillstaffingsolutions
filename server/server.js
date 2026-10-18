@@ -271,8 +271,8 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'healthy', database: 'connected', timestamp: new Date() });
 });
 
-// Start Server & Connect MongoDB Atlas
-if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+// Start Server & Connect MongoDB Atlas (Standalone PM2 / Node mode)
+if (!process.env.VERCEL) {
   connectDB().then(() => {
     seedInitialDatabase();
     app.listen(PORT, () => {
