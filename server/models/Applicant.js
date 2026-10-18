@@ -14,9 +14,11 @@ const applicantSchema = new mongoose.Schema(
     resumeFileName: { type: String, default: 'Resume.pdf' },
     status: {
       type: String,
-      enum: ['New', 'Screened', 'Shortlisted', 'Interview Scheduled', 'Hired', 'Rejected'],
+      enum: ['New', 'Reviewing', 'Screened', 'Shortlisted', 'Interview Scheduled', 'Offered', 'Hired', 'Rejected'],
       default: 'New',
     },
+    notes: { type: String, default: '' },
+    interviewDate: { type: String, default: '' },
     formattedDate: { type: String },
   },
   { timestamps: true }

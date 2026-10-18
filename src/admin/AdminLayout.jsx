@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   LayoutDashboard,
   Building2,
@@ -11,6 +11,9 @@ import {
   ExternalLink,
   ShieldCheck,
   LogOut,
+  UserCheck,
+  CheckCircle2,
+  Database,
 } from 'lucide-react';
 import './admin.css';
 import {
@@ -28,161 +31,18 @@ import CallbacksView from './CallbacksView';
 import ConsultationsView from './ConsultationsView';
 import ResumeBankView from './ResumeBankView';
 import WebsiteCMSView from './WebsiteCMSView';
-import { api } from '../api/apiClient';
+import UsersView from './UsersView';
+import AdminAuthModal from './AdminAuthModal';
+import { api, getAuthToken, getCachedUser, clearAuthSession } from '../api/apiClient';
 
 export default function AdminLayout({ onNavigate }) {
-  // Ensure store is seeded
-  useEffect(() => {
-    initAdminStore();
+  // Authentication & session state
+  const [isAuthenticated, setIsAuthenticated] = useState(() => !!getAuthToken());
+  const [currentUser, setCurrentUser] = useState(() => getCachedUser());
+  const [users, setUsers] = useState([]);
+  const [mongoConnected, setMongoConnected] = useState(false);
 
-    // Fetch live data from MongoDB Atlas backend API if available
-    const fetchMongoData = async () => {
-      try {
-        const [
-          remoteLeads,
-          remoteCallbacks,
-          remoteConsultations,
-          remoteJobs,
-          remoteApplicants,
-          remoteResumes,
-          remoteTeam,
-          remoteStats,
-        ] = await Promise.allSettled([
-          api.getLeads(),
-          api.getCallbacks(),
-          api.getConsultations(),
-          api.getJobs(),
-          api.getApplicants(),
-          api.getResumes(),
-          api.getTeam(),
-          api.getStats(),
-        ]);
-
-        if (remoteLeads.status === 'fulfilled' && remoteLeads.value?.length) {
-          const mapped = remoteLeads.value.map((l) => ({
-            id: l.leadId || l._id,
-            name: l.name,
-            company: l.company,
-            phone: l.phone,
-            email: l.email,
-            category: l.category,
-            openings: l.openings,
-            description: l.description,
-            status: l.status,
-            date: l.formattedDate || new Date(l.createdAt).toLocaleString(),
-          }));
-          setLeads(mapped);
-          setStored(STORAGE_KEYS.EMPLOYER_LEADS, mapped);
-        }
-
-        if (remoteCallbacks.status === 'fulfilled' && remoteCallbacks.value?.length) {
-          const mapped = remoteCallbacks.value.map((c) => ({
-            id: c.callbackId || c._id,
-            name: c.name,
-            mobile: c.mobile,
-            topic: c.topic,
-            source: c.source,
-            status: c.status,
-            date: c.formattedDate || new Date(c.createdAt).toLocaleString(),
-          }));
-          setCallbacks(mapped);
-          setStored(STORAGE_KEYS.CALLBACKS, mapped);
-        }
-
-        if (remoteConsultations.status === 'fulfilled' && remoteConsultations.value?.length) {
-          const mapped = remoteConsultations.value.map((con) => ({
-            id: con.consultationId || con._id,
-            name: con.name,
-            phone: con.phone,
-            email: con.email,
-            requirementType: con.requirementType,
-            preferredRole: con.preferredRole,
-            status: con.status,
-            date: con.formattedDate || new Date(con.createdAt).toLocaleString(),
-          }));
-          setConsultations(mapped);
-          setStored(STORAGE_KEYS.CONSULTATIONS, mapped);
-        }
-
-        if (remoteJobs.status === 'fulfilled' && remoteJobs.value?.length) {
-          const mapped = remoteJobs.value.map((j) => ({
-            id: j.jobId || j._id,
-            title: j.title,
-            company: j.company,
-            experience: j.experience,
-            location: j.location,
-            type: j.type,
-            category: j.category,
-            tags: j.tags,
-            description: j.description,
-            isNew: j.isNew,
-            status: j.status,
-            applicantsCount: j.applicantsCount,
-          }));
-          setJobs(mapped);
-          setStored(STORAGE_KEYS.JOBS, mapped);
-        }
-
-        if (remoteApplicants.status === 'fulfilled' && remoteApplicants.value?.length) {
-          const mapped = remoteApplicants.value.map((a) => ({
-            id: a.applicantId || a._id,
-            jobId: a.jobId,
-            jobTitle: a.jobTitle,
-            candidateName: a.candidateName,
-            email: a.email,
-            phone: a.phone,
-            experience: a.experience,
-            currentCompany: a.currentCompany,
-            status: a.status,
-            resumeFileName: a.resumeFileName,
-            resumeUrl: a.resumeUrl,
-            date: a.formattedDate || new Date(a.createdAt).toLocaleString(),
-          }));
-          setApplicants(mapped);
-          setStored(STORAGE_KEYS.APPLICANTS, mapped);
-        }
-
-        if (remoteResumes.status === 'fulfilled' && remoteResumes.value?.length) {
-          const mapped = remoteResumes.value.map((r) => ({
-            id: r.resumeId || r._id,
-            candidateName: r.candidateName,
-            email: r.email,
-            phone: r.phone,
-            category: r.category,
-            experience: r.experience,
-            fileName: r.fileName,
-            fileUrl: r.fileUrl,
-            date: r.formattedDate || new Date(r.createdAt).toLocaleString(),
-          }));
-          setResumes(mapped);
-          setStored(STORAGE_KEYS.RESUMES, mapped);
-        }
-
-        if (remoteTeam.status === 'fulfilled' && remoteTeam.value?.length) {
-          const mapped = remoteTeam.value.map((m) => ({
-            id: m.memberId || m._id,
-            name: m.name,
-            role: m.role,
-            quote: m.quote,
-            image: m.image,
-          }));
-          setTeam(mapped);
-          setStored(STORAGE_KEYS.TEAM, mapped);
-        }
-
-        if (remoteStats.status === 'fulfilled' && remoteStats.value) {
-          setStats(remoteStats.value);
-          setStored(STORAGE_KEYS.STATS, remoteStats.value);
-        }
-      } catch (err) {
-        console.warn('MongoDB sync note:', err.message);
-      }
-    };
-
-    fetchMongoData();
-  }, []);
-
-  // State management backed by localStorage
+  // State management backed by localStorage / Mongo
   const [activeTab, setActiveTab] = useState('dashboard');
   const [tabOptions, setTabOptions] = useState({});
 
@@ -194,6 +54,206 @@ export default function AdminLayout({ onNavigate }) {
   const [resumes, setResumes] = useState(() => getStored(STORAGE_KEYS.RESUMES, []));
   const [team, setTeam] = useState(() => getStored(STORAGE_KEYS.TEAM, []));
   const [stats, setStats] = useState(() => getStored(STORAGE_KEYS.STATS, {}));
+  const [testimonials, setTestimonials] = useState(() => getStored(STORAGE_KEYS.TESTIMONIALS, []));
+  const [faqs, setFaqs] = useState(() => getStored(STORAGE_KEYS.FAQS, []));
+
+  // Fetch live data from MongoDB Atlas backend API
+  const fetchMongoData = useCallback(async () => {
+    try {
+      // Validate session token with /me
+      if (getAuthToken()) {
+        try {
+          const me = await api.getMe();
+          setCurrentUser(me);
+          setMongoConnected(true);
+        } catch (err) {
+          console.warn('Session verification notice:', err.message);
+          if (err.message.includes('401') || err.message.includes('expired') || err.message.includes('authorized')) {
+            clearAuthSession();
+            setIsAuthenticated(false);
+            return;
+          }
+        }
+      }
+
+      const [
+        remoteLeads,
+        remoteCallbacks,
+        remoteConsultations,
+        remoteJobs,
+        remoteApplicants,
+        remoteResumes,
+        remoteTeam,
+        remoteStats,
+        remoteUsers,
+        remoteTestimonials,
+        remoteFaqs,
+      ] = await Promise.allSettled([
+        api.getLeads(),
+        api.getCallbacks(),
+        api.getConsultations(),
+        api.getJobs('all'),
+        api.getApplicants(),
+        api.getResumes(),
+        api.getTeam(),
+        api.getStats(),
+        api.getUsers(),
+        api.getTestimonials(),
+        api.getFaqs(),
+      ]);
+
+      setMongoConnected(true);
+
+      if (remoteLeads.status === 'fulfilled' && remoteLeads.value?.length) {
+        const mapped = remoteLeads.value.map((l) => ({
+          id: l.leadId || l._id,
+          name: l.name,
+          company: l.company,
+          phone: l.phone,
+          email: l.email,
+          category: l.category,
+          openings: l.openings,
+          description: l.description,
+          status: l.status,
+          notes: l.notes || '',
+          priority: l.priority || 'Normal',
+          assignedTo: l.assignedTo || 'Unassigned',
+          date: l.formattedDate || new Date(l.createdAt).toLocaleString(),
+        }));
+        setLeads(mapped);
+        setStored(STORAGE_KEYS.EMPLOYER_LEADS, mapped);
+      }
+
+      if (remoteCallbacks.status === 'fulfilled' && remoteCallbacks.value?.length) {
+        const mapped = remoteCallbacks.value.map((c) => ({
+          id: c.callbackId || c._id,
+          name: c.name,
+          mobile: c.mobile,
+          topic: c.topic,
+          source: c.source,
+          status: c.status,
+          notes: c.notes || '',
+          priority: c.priority || 'Urgent',
+          date: c.formattedDate || new Date(c.createdAt).toLocaleString(),
+        }));
+        setCallbacks(mapped);
+        setStored(STORAGE_KEYS.CALLBACKS, mapped);
+      }
+
+      if (remoteConsultations.status === 'fulfilled' && remoteConsultations.value?.length) {
+        const mapped = remoteConsultations.value.map((con) => ({
+          id: con.consultationId || con._id,
+          name: con.name,
+          phone: con.phone,
+          email: con.email,
+          requirementType: con.requirementType,
+          preferredRole: con.preferredRole,
+          status: con.status,
+          notes: con.notes || '',
+          date: con.formattedDate || new Date(con.createdAt).toLocaleString(),
+        }));
+        setConsultations(mapped);
+        setStored(STORAGE_KEYS.CONSULTATIONS, mapped);
+      }
+
+      if (remoteJobs.status === 'fulfilled' && remoteJobs.value?.length) {
+        const mapped = remoteJobs.value.map((j) => ({
+          id: j.jobId || j._id,
+          title: j.title,
+          company: j.company,
+          experience: j.experience,
+          location: j.location,
+          type: j.type,
+          category: j.category,
+          tags: j.tags,
+          description: j.description,
+          isNew: j.isNew,
+          status: j.status,
+          applicantsCount: j.applicantsCount,
+        }));
+        setJobs(mapped);
+        setStored(STORAGE_KEYS.JOBS, mapped);
+      }
+
+      if (remoteApplicants.status === 'fulfilled' && remoteApplicants.value?.length) {
+        const mapped = remoteApplicants.value.map((a) => ({
+          id: a.applicantId || a._id,
+          jobId: a.jobId,
+          jobTitle: a.jobTitle,
+          candidateName: a.candidateName,
+          email: a.email,
+          phone: a.phone,
+          experience: a.experience,
+          currentCompany: a.currentCompany,
+          status: a.status,
+          notes: a.notes || '',
+          resumeFileName: a.resumeFileName,
+          resumeUrl: a.resumeUrl,
+          date: a.formattedDate || new Date(a.createdAt).toLocaleString(),
+        }));
+        setApplicants(mapped);
+        setStored(STORAGE_KEYS.APPLICANTS, mapped);
+      }
+
+      if (remoteResumes.status === 'fulfilled' && remoteResumes.value?.length) {
+        const mapped = remoteResumes.value.map((r) => ({
+          id: r.resumeId || r._id,
+          candidateName: r.candidateName,
+          email: r.email,
+          phone: r.phone,
+          category: r.category,
+          experience: r.experience,
+          fileName: r.fileName,
+          fileUrl: r.fileUrl,
+          status: r.status || 'New',
+          notes: r.notes || '',
+          date: r.formattedDate || new Date(r.createdAt).toLocaleString(),
+        }));
+        setResumes(mapped);
+        setStored(STORAGE_KEYS.RESUMES, mapped);
+      }
+
+      if (remoteTeam.status === 'fulfilled' && remoteTeam.value?.length) {
+        const mapped = remoteTeam.value.map((m) => ({
+          id: m.memberId || m._id,
+          name: m.name,
+          role: m.role,
+          quote: m.quote,
+          image: m.image,
+        }));
+        setTeam(mapped);
+        setStored(STORAGE_KEYS.TEAM, mapped);
+      }
+
+      if (remoteStats.status === 'fulfilled' && remoteStats.value) {
+        setStats(remoteStats.value);
+        setStored(STORAGE_KEYS.STATS, remoteStats.value);
+      }
+
+      if (remoteUsers.status === 'fulfilled' && Array.isArray(remoteUsers.value)) {
+        setUsers(remoteUsers.value);
+      }
+
+      if (remoteTestimonials.status === 'fulfilled' && remoteTestimonials.value?.length) {
+        setTestimonials(remoteTestimonials.value);
+        setStored(STORAGE_KEYS.TESTIMONIALS, remoteTestimonials.value);
+      }
+
+      if (remoteFaqs.status === 'fulfilled' && remoteFaqs.value?.length) {
+        setFaqs(remoteFaqs.value);
+        setStored(STORAGE_KEYS.FAQS, remoteFaqs.value);
+      }
+    } catch (err) {
+      console.warn('MongoDB sync note:', err.message);
+    }
+  }, []);
+
+  useEffect(() => {
+    initAdminStore();
+    if (isAuthenticated) {
+      fetchMongoData();
+    }
+  }, [isAuthenticated, fetchMongoData]);
 
   // Handlers for state updates with MongoDB Atlas synchronization
   const handleUpdateLeadStatus = async (id, newStatus) => {
@@ -347,11 +407,67 @@ export default function AdminLayout({ onNavigate }) {
     }
   };
 
+  const handleSaveTestimonials = async (newTestimonials) => {
+    setTestimonials(newTestimonials);
+    setStored(STORAGE_KEYS.TESTIMONIALS, newTestimonials);
+    try {
+      await api.saveTestimonials(newTestimonials);
+    } catch (e) {
+      console.warn('Backend sync failed, saved locally:', e.message);
+    }
+  };
+
+  const handleSaveFaqs = async (newFaqs) => {
+    setFaqs(newFaqs);
+    setStored(STORAGE_KEYS.FAQS, newFaqs);
+    try {
+      await api.saveFaqs(newFaqs);
+    } catch (e) {
+      console.warn('Backend sync failed, saved locally:', e.message);
+    }
+  };
+
+  // User Access Management Handlers
+  const handleAddUser = async (userData) => {
+    const newUser = await api.createUser(userData);
+    setUsers((prev) => [newUser, ...prev]);
+  };
+
+  const handleUpdateUser = async (id, data) => {
+    const updated = await api.updateUser(id, data);
+    setUsers((prev) => prev.map((u) => (u._id === id || u.id === id ? { ...u, ...updated } : u)));
+  };
+
+  const handleDeleteUser = async (id) => {
+    await api.deleteUser(id);
+    setUsers((prev) => prev.filter((u) => u._id !== id && u.id !== id));
+  };
+
+  const handleLogout = () => {
+    api.logout();
+    setIsAuthenticated(false);
+    setCurrentUser(null);
+  };
+
   const handleNavigateTab = (tab, options = {}) => {
     setActiveTab(tab);
     setTabOptions(options);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // If not authenticated, display login & setup gate
+  if (!isAuthenticated) {
+    return (
+      <AdminAuthModal
+        onLoginSuccess={(user) => {
+          setCurrentUser(user);
+          setIsAuthenticated(true);
+          fetchMongoData();
+        }}
+        onCancel={() => onNavigate && onNavigate('home')}
+      />
+    );
+  }
 
   // Badge calculations
   const newLeads = leads.filter((l) => l.status === 'New').length;
@@ -377,6 +493,8 @@ export default function AdminLayout({ onNavigate }) {
         return { title: 'Candidate Resume Bank', subtitle: 'General submissions talent pool' };
       case 'cms':
         return { title: 'Website Content & Team', subtitle: 'Manage leadership team and site metrics' };
+      case 'users':
+        return { title: 'Team Access & Permissions', subtitle: 'Manage administrators and recruiter accounts' };
       default:
         return { title: 'Admin Portal', subtitle: 'Interskill Staffing Solutions' };
     }
@@ -393,7 +511,7 @@ export default function AdminLayout({ onNavigate }) {
             <ShieldCheck size={22} color="#DDB568" />
             <span>INTERSKILL</span>
           </div>
-          <span className="adm-sidebar__logo-tag">Admin</span>
+          <span className="adm-sidebar__logo-tag">{currentUser?.role === 'admin' ? 'Admin' : 'Recruiter'}</span>
         </div>
 
         <nav className="adm-sidebar__nav">
@@ -491,6 +609,19 @@ export default function AdminLayout({ onNavigate }) {
               <span>Team & Metrics</span>
             </div>
           </button>
+
+          {currentUser?.role === 'admin' && (
+            <button
+              className={`adm-nav-item ${activeTab === 'users' ? 'active' : ''}`}
+              onClick={() => handleNavigateTab('users')}
+            >
+              <div className="adm-nav-item__left">
+                <UserCheck size={17} />
+                <span>Team Access</span>
+              </div>
+              <span style={{ fontSize: '11px', color: '#8899A6' }}>{users.length}</span>
+            </button>
+          )}
         </nav>
 
         <div className="adm-sidebar__footer">
@@ -499,7 +630,15 @@ export default function AdminLayout({ onNavigate }) {
             onClick={() => onNavigate && onNavigate('home')}
           >
             <ExternalLink size={14} />
-            <span>View Public Website</span>
+            <span>Public Website</span>
+          </button>
+          <button
+            className="adm-btn-website"
+            onClick={handleLogout}
+            style={{ marginTop: '8px', color: '#FCA5A5' }}
+          >
+            <LogOut size={14} />
+            <span>Sign Out</span>
           </button>
         </div>
       </aside>
@@ -509,7 +648,37 @@ export default function AdminLayout({ onNavigate }) {
         {/* Topbar */}
         <header className="adm-topbar">
           <div className="adm-topbar__title-group">
-            <h1>{currentMeta.title}</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <h1>{currentMeta.title}</h1>
+              {mongoConnected && (
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    backgroundColor: '#ECFDF5',
+                    color: '#065F46',
+                    border: '1px solid #A7F3D0',
+                    borderRadius: '20px',
+                    padding: '3px 10px',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                  }}
+                  title="Connected to MongoDB Atlas: interskillDB"
+                >
+                  <span
+                    style={{
+                      width: '6px',
+                      height: '6px',
+                      borderRadius: '50%',
+                      backgroundColor: '#10B981',
+                      display: 'inline-block',
+                    }}
+                  />
+                  <span>MongoDB Atlas</span>
+                </div>
+              )}
+            </div>
             <p>{currentMeta.subtitle}</p>
           </div>
 
@@ -522,11 +691,24 @@ export default function AdminLayout({ onNavigate }) {
             </button>
 
             <div className="adm-user-profile">
-              <div className="adm-user-avatar">IS</div>
-              <div className="adm-user-meta">
-                <span className="adm-user-meta__name">Interskill Admin</span>
-                <span className="adm-user-meta__role">Recruitment Operations</span>
+              <div className="adm-user-avatar">
+                {currentUser?.name ? currentUser.name.charAt(0).toUpperCase() : 'IS'}
               </div>
+              <div className="adm-user-meta">
+                <span className="adm-user-meta__name">{currentUser?.name || 'Interskill User'}</span>
+                <span className="adm-user-meta__role">
+                  {currentUser?.role === 'admin' ? 'Master Admin' : 'Recruitment Specialist'}
+                </span>
+              </div>
+              <button
+                type="button"
+                className="adm-action-icon-btn"
+                onClick={handleLogout}
+                title="Log Out"
+                style={{ marginLeft: '10px' }}
+              >
+                <LogOut size={16} />
+              </button>
             </div>
           </div>
         </header>
@@ -600,8 +782,22 @@ export default function AdminLayout({ onNavigate }) {
             <WebsiteCMSView
               team={team}
               stats={stats}
+              testimonials={testimonials}
+              faqs={faqs}
               onSaveTeam={handleSaveTeam}
               onSaveStats={handleSaveStats}
+              onSaveTestimonials={handleSaveTestimonials}
+              onSaveFaqs={handleSaveFaqs}
+            />
+          )}
+
+          {activeTab === 'users' && (
+            <UsersView
+              users={users}
+              currentUser={currentUser}
+              onAddUser={handleAddUser}
+              onUpdateUser={handleUpdateUser}
+              onDeleteUser={handleDeleteUser}
             />
           )}
         </main>

@@ -1,8 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight, Star, Sparkles, Quote } from 'lucide-react';
-import { testimonials } from '../data/testimonials';
+import { testimonials as defaultTestimonials } from '../data/testimonials';
+import { api } from '../api/apiClient';
 
 export default function Testimonials() {
+  const [items, setItems] = useState(defaultTestimonials);
+
+  useEffect(() => {
+    api.getTestimonials().then((res) => {
+      if (Array.isArray(res) && res.length > 0) {
+        setItems(res);
+      }
+    }).catch(() => {});
+  }, []);
   return (
     <section className="reviews-section" id="reviews">
       <div className="container">
@@ -24,9 +34,9 @@ export default function Testimonials() {
           </a>
         </div>
 
-        {/* 2 Testimonials Grid */}
+        {/* Testimonials Grid */}
         <div className="reviews-grid">
-          {testimonials.map((item) => (
+          {items.map((item) => (
             <div key={item.id} className="testimonial-card">
               <img
                 src={item.image}

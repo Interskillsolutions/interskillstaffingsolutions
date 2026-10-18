@@ -9,6 +9,8 @@ const STORAGE_KEYS = {
   RESUMES: 'interskill_admin_resumes',
   TEAM: 'interskill_admin_team',
   STATS: 'interskill_admin_stats',
+  TESTIMONIALS: 'interskill_admin_testimonials',
+  FAQS: 'interskill_admin_faqs',
   ADMIN_USER: 'interskill_admin_user',
 };
 
@@ -329,6 +331,58 @@ const initialStats = {
   address: '104, Jaganath Tower, above Parijat Sweets, Opp Nerul Railway Station (West), Sector 20.',
 };
 
+const initialTestimonials = [
+  {
+    id: 'rohit',
+    name: 'Rohit Patil',
+    role: 'Placed as Software Developer',
+    quote: 'Interskill helped me find the right opportunity and supported me throughout the process. Highly professional and responsive team!',
+    rating: 5,
+    image: '/images/testimonial-rohit.png',
+  },
+  {
+    id: 'sneha',
+    name: 'Sneha Iyer',
+    role: 'HR Manager, Growing Tech Pvt. Ltd.',
+    quote: 'The team understood our hiring needs and provided quality candidates within a short time. Excellent support and communication.',
+    rating: 5,
+    image: '/images/testimonial-sneha.png',
+  },
+];
+
+const initialFaqs = [
+  {
+    id: 1,
+    question: '1. What services does Interskill Staffing Solutions offer?',
+    answer: 'Interskill Staffing Solutions provides end-to-end recruitment and workforce solutions, connecting companies with vetted talent across IT, HR, Finance, Engineering, and Corporate Support roles, while assisting job seekers with career placement and guidance.',
+  },
+  {
+    id: 2,
+    question: '2. Do you provide recruitment services for companies?',
+    answer: 'Yes, we provide end-to-end hiring services for companies of all sizes, from candidate sourcing and screening to interview coordination and offer management across multiple professional sectors.',
+  },
+  {
+    id: 3,
+    question: '3. Can freshers register for job opportunities?',
+    answer: 'Absolutely. We actively support fresh graduates and entry-level candidates by helping them identify suitable career paths and connecting them with employers open to fresher talent.',
+  },
+  {
+    id: 4,
+    question: '4. Is candidate registration free?',
+    answer: 'Yes, candidate registration, job application, and placement support for job seekers are completely free of charge. We never charge candidates for recruitment assistance.',
+  },
+  {
+    id: 5,
+    question: '5. Which industries and job roles do you support?',
+    answer: 'We specialize in IT & Technology, Business Support & Corporate Roles, HR & Talent Acquisition, Finance, Accounting & Research, and Engineering & Civil sectors.',
+  },
+  {
+    id: 6,
+    question: '6. How can I get started with Interskill Staffing Solutions?',
+    answer: 'You can submit your resume via the "For Job Seekers" section, request a free consultation through our form, or contact our advisory team directly via phone or email.',
+  },
+];
+
 // Storage helper functions
 export const getStored = (key, fallback) => {
   try {
@@ -373,6 +427,12 @@ export const initAdminStore = () => {
   }
   if (!localStorage.getItem(STORAGE_KEYS.STATS)) {
     setStored(STORAGE_KEYS.STATS, initialStats);
+  }
+  if (!localStorage.getItem(STORAGE_KEYS.TESTIMONIALS)) {
+    setStored(STORAGE_KEYS.TESTIMONIALS, initialTestimonials);
+  }
+  if (!localStorage.getItem(STORAGE_KEYS.FAQS)) {
+    setStored(STORAGE_KEYS.FAQS, initialFaqs);
   }
 };
 

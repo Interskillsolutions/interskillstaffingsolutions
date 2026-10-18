@@ -1,8 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Quote, ArrowRight } from 'lucide-react';
-import { employerTestimonials } from '../../data/employerData';
+import { employerTestimonials as defaultTestimonials } from '../../data/employerData';
+import { api } from '../../api/apiClient';
 
 export default function EmployerTestimonials() {
+  const [testimonials, setTestimonials] = useState(defaultTestimonials);
+
+  useEffect(() => {
+    api.getTestimonials().then((res) => {
+      if (Array.isArray(res) && res.length > 0) {
+        setTestimonials(res);
+      }
+    }).catch(() => {});
+  }, []);
+
   return (
     <section className="emp-testimonials-section" id="testimonials">
       <div className="container">
@@ -24,8 +35,8 @@ export default function EmployerTestimonials() {
 
         {/* Testimonials 2-Column Grid */}
         <div className="emp-testimonials-grid">
-          {employerTestimonials.map((t) => (
-            <div key={t.id} className="emp-testimonial-card">
+          {testimonials.map((t) => (
+            <div key={t.id || t._id} className="emp-testimonial-card">
               <div className="emp-testimonial-quote-wrap">
                 <Quote size={24} className="emp-testimonial-quote-icon" />
                 <p className="emp-testimonial-quote-text">"{t.quote}"</p>

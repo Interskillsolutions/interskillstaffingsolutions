@@ -116,22 +116,47 @@ export default function ResumeBankView({ resumes, onDeleteResume }) {
                     </td>
                     <td style={{ fontSize: '12.5px' }}>{item.experience || 'Not specified'}</td>
                     <td>
-                      <div
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          color: '#071D3A',
-                          fontSize: '12px',
-                          background: '#FEF3C7',
-                          padding: '4px 9px',
-                          borderRadius: '4px',
-                          fontWeight: 500,
-                        }}
-                      >
-                        <FileText size={13} color="#B45309" />
-                        <span>{item.fileName || 'Candidate_Resume.pdf'}</span>
-                      </div>
+                      {item.fileUrl ? (
+                        <a
+                          href={item.fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            color: '#92400E',
+                            fontSize: '12px',
+                            background: '#FEF3C7',
+                            padding: '4px 9px',
+                            borderRadius: '4px',
+                            fontWeight: 600,
+                            textDecoration: 'none',
+                          }}
+                          title="Open attached resume"
+                        >
+                          <FileText size={13} color="#B45309" />
+                          <span>{item.fileName || 'View Resume'}</span>
+                          <Download size={11} style={{ marginLeft: '2px' }} />
+                        </a>
+                      ) : (
+                        <div
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            color: '#071D3A',
+                            fontSize: '12px',
+                            background: '#F1F5F9',
+                            padding: '4px 9px',
+                            borderRadius: '4px',
+                            fontWeight: 500,
+                          }}
+                        >
+                          <FileText size={13} color="#64748B" />
+                          <span>{item.fileName || 'Candidate_Resume.pdf'}</span>
+                        </div>
+                      )}
                     </td>
                     <td>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>

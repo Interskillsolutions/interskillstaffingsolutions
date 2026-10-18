@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight, Sparkles, UserCheck } from 'lucide-react';
 import { getStored, STORAGE_KEYS } from '../admin/adminStore';
+import { api } from '../api/apiClient';
 // import { advisors } from '../data/advisors';
 
 export const defaultTeamMembers = [
@@ -49,7 +50,15 @@ export const defaultTeamMembers = [
 ];
 
 export default function AdvisoryBoard() {
-  const currentTeam = getStored(STORAGE_KEYS.TEAM, defaultTeamMembers);
+  const [currentTeam, setCurrentTeam] = useState(() => getStored(STORAGE_KEYS.TEAM, defaultTeamMembers));
+
+  useEffect(() => {
+    api.getTeam().then((res) => {
+      if (Array.isArray(res) && res.length > 0) {
+        setCurrentTeam(res);
+      }
+    }).catch(() => {});
+  }, []);
   return (
     <section className="advisory-section" id="advisory-board">
       <div className="container">

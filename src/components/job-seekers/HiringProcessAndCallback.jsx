@@ -10,6 +10,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { jobCategories } from '../../data/jobSeekerJobs';
+import { api } from '../../api/apiClient';
 
 export default function HiringProcessAndCallback() {
   const steps = [
@@ -46,9 +47,10 @@ export default function HiringProcessAndCallback() {
     category: '',
   });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name.trim() || !form.mobile.trim()) {
       setError('Please provide your name and mobile number.');
@@ -59,7 +61,21 @@ export default function HiringProcessAndCallback() {
       return;
     }
     setError('');
-    setSubmitted(true);
+    setLoading(true);
+
+    try {
+      await api.createCallback({
+        name: form.name.trim(),
+        mobile: form.mobile.trim(),
+        topic: form.category || 'General Candidate Career Assistance',
+        source: 'For Job Seekers Page — Hiring Process Callback',
+      });
+    } catch (err) {
+      console.warn('Callback submission warning:', err.message);
+    } finally {
+      setLoading(false);
+      setSubmitted(true);
+    }
   };
 
   return (

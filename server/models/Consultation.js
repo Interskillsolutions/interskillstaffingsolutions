@@ -10,9 +10,12 @@ const consultationSchema = new mongoose.Schema(
     preferredRole: { type: String, default: 'General consultation' },
     status: {
       type: String,
-      enum: ['New', 'Contacted', 'Closed'],
+      enum: ['New', 'In Review', 'Scheduled', 'Completed', 'Closed'],
       default: 'New',
     },
+    clientType: { type: String, default: 'General' },
+    notes: { type: String, default: '' },
+    meetingDate: { type: String, default: '' },
     formattedDate: { type: String },
   },
   { timestamps: true }

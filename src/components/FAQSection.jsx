@@ -1,9 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronDown, ArrowRight, Sparkles } from 'lucide-react';
-import { faqs } from '../data/faqs';
+import { faqs as defaultFaqs } from '../data/faqs';
+import { api } from '../api/apiClient';
 
 export default function FAQSection() {
+  const [faqList, setFaqList] = useState(defaultFaqs);
   const [openId, setOpenId] = useState(null);
+
+  useEffect(() => {
+    api.getFaqs().then((res) => {
+      if (Array.isArray(res) && res.length > 0) {
+        setFaqList(res);
+      }
+    }).catch(() => {});
+  }, []);
 
   const toggleFAQ = (id) => {
     setOpenId(openId === id ? null : id);
@@ -27,21 +37,22 @@ export default function FAQSection() {
           </a>
         </div>
 
-        {/* 6 FAQs in 2-Column Grid */}
+        {/* FAQs in 2-Column Grid */}
         <div className="faq-grid">
-          {faqs.map((faq) => {
-            const isOpen = openId === faq.id;
+          {faqList.map((faq) => {
+            const faqKey = faq.id || faq.faqId;
+            const isOpen = openId === faqKey;
             return (
               <div
-                key={faq.id}
+                key={faqKey}
                 className={`faq-item ${isOpen ? 'is-open' : ''}`}
               >
                 <button
                   type="button"
                   className="faq-question-btn"
-                  onClick={() => toggleFAQ(faq.id)}
+                  onClick={() => toggleFAQ(faqKey)}
                   aria-expanded={isOpen}
-                  aria-controls={`faq-answer-${faq.id}`}
+                  aria-controls={`faq-answer-${faqKey}`}
                 >
                   <span>{faq.question}</span>
                   <ChevronDown size={16} className="faq-chevron" />

@@ -166,22 +166,47 @@ export default function ApplicantsView({
                       )}
                     </td>
                     <td>
-                      <div
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '5px',
-                          fontSize: '11.5px',
-                          color: '#475569',
-                          background: '#F1F5F9',
-                          padding: '3px 8px',
-                          borderRadius: '4px',
-                        }}
-                        title={app.resumeFileName || 'Resume.pdf'}
-                      >
-                        <FileText size={13} color="#DDB568" />
-                        <span>{app.resumeFileName || 'Candidate_Resume.pdf'}</span>
-                      </div>
+                      {app.resumeUrl ? (
+                        <a
+                          href={app.resumeUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            fontSize: '11.5px',
+                            color: '#92400E',
+                            background: '#FEF3C7',
+                            padding: '3px 8px',
+                            borderRadius: '4px',
+                            fontWeight: 600,
+                            textDecoration: 'none',
+                          }}
+                          title={app.resumeFileName || 'Resume.pdf'}
+                        >
+                          <FileText size={13} color="#B45309" />
+                          <span>{app.resumeFileName || 'Resume.pdf'}</span>
+                          <Download size={11} style={{ marginLeft: '2px' }} />
+                        </a>
+                      ) : (
+                        <div
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            fontSize: '11.5px',
+                            color: '#475569',
+                            background: '#F1F5F9',
+                            padding: '3px 8px',
+                            borderRadius: '4px',
+                          }}
+                          title={app.resumeFileName || 'Resume.pdf'}
+                        >
+                          <FileText size={13} color="#DDB568" />
+                          <span>{app.resumeFileName || 'Candidate_Resume.pdf'}</span>
+                        </div>
+                      )}
                     </td>
                     <td>
                       <select

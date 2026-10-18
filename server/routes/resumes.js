@@ -1,13 +1,39 @@
 import express from 'express';
 import multer from 'multer';
+import rateLimit from 'express-rate-limit';
 import cloudinary from '../config/cloudinary.js';
 import Resume from '../models/Resume.js';
+import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
-// GET all resumes
-router.get('/', async (req, res) => {
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ];
+  if (allowedTypes.includes(file.mimetype) || file.originalname.match(/\.(pdf|doc|docx)$/i)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Invalid file format. Only PDF, DOC, and DOCX files are allowed.'), false);
+  }
+};
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter,
+});
+
+const resumeLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { message: 'Too many resumes uploaded. Please try again later.' },
+});
+
+// GET all resumes (Protected)
+router.get('/', protect, async (req, res) => {
   try {
     const resumes = await Resume.find().sort({ createdAt: -1 });
     res.json(resumes);
@@ -16,10 +42,14 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST new resume submission with Cloudinary upload
-router.post('/', upload.single('resume'), async (req, res) => {
+// POST new resume submission with Cloudinary upload (Public)
+router.post('/', resumeLimiter, upload.single('resume'), async (req, res) => {
   try {
     const { candidateName, email, phone, category, experience } = req.body;
+    if (!candidateName || !email || !phone) {
+      return res.status(400).json({ message: 'Candidate name, email, and phone number are required' });
+    }
+
     let fileUrl = '';
     let fileName = req.file ? req.file.originalname : 'Candidate_Resume.pdf';
 
@@ -48,13 +78,14 @@ router.post('/', upload.single('resume'), async (req, res) => {
 
     const newResume = new Resume({
       resumeId,
-      candidateName,
-      email,
-      phone,
+      candidateName: candidateName.trim(),
+      email: email.trim().toLowerCase(),
+      phone: phone.trim(),
       category: category || 'General Candidate Pool',
       experience: experience || 'Profile Submitted',
       fileName,
       fileUrl,
+      status: 'New',
       formattedDate,
     });
 
@@ -66,12 +97,38 @@ router.post('/', upload.single('resume'), async (req, res) => {
   }
 });
 
-// DELETE resume
-router.delete('/:id', async (req, res) => {
+// PATCH update resume details (status, notes) (Protected)
+router.patch('/:id', protect, async (req, res) => {
   try {
-    const deleted = await Resume.findOneAndDelete({
-      $or: [{ _id: req.params.id }, { resumeId: req.params.id }],
-    });
+    const { status, notes } = req.body;
+    const updateData = {};
+    if (status) updateData.status = status;
+    if (typeof notes === 'string') updateData.notes = notes;
+
+    const query = req.params.id.length === 24
+      ? { $or: [{ _id: req.params.id }, { resumeId: req.params.id }] }
+      : { resumeId: req.params.id };
+
+    const updated = await Resume.findOneAndUpdate(
+      query,
+      updateData,
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ message: 'Resume record not found' });
+    res.json(updated);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// DELETE resume (Protected)
+router.delete('/:id', protect, async (req, res) => {
+  try {
+    const query = req.params.id.length === 24
+      ? { $or: [{ _id: req.params.id }, { resumeId: req.params.id }] }
+      : { resumeId: req.params.id };
+
+    const deleted = await Resume.findOneAndDelete(query);
     if (!deleted) return res.status(404).json({ message: 'Resume not found' });
     res.json({ message: 'Resume deleted successfully' });
   } catch (error) {

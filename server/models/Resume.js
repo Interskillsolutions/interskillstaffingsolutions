@@ -10,6 +10,8 @@ const resumeSchema = new mongoose.Schema(
     experience: { type: String, default: 'Profile Submitted' },
     fileName: { type: String, default: 'Candidate_Resume.pdf' },
     fileUrl: { type: String, default: '' },
+    status: { type: String, enum: ['New', 'Reviewed', 'Archived'], default: 'New' },
+    notes: { type: String, default: '' },
     formattedDate: { type: String },
   },
   { timestamps: true }

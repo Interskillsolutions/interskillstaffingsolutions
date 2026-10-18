@@ -9,9 +9,12 @@ const callbackSchema = new mongoose.Schema(
     source: { type: String, default: 'Website Callback Banner' },
     status: {
       type: String,
-      enum: ['Pending', 'Contacted', 'Closed'],
+      enum: ['Pending', 'In Progress', 'Contacted', 'Closed', 'Dismissed'],
       default: 'Pending',
     },
+    notes: { type: String, default: '' },
+    priority: { type: String, enum: ['Normal', 'High', 'Urgent'], default: 'Urgent' },
+    followUpDate: { type: String, default: '' },
     formattedDate: { type: String },
   },
   { timestamps: true }

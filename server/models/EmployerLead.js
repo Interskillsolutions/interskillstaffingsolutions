@@ -12,9 +12,12 @@ const employerLeadSchema = new mongoose.Schema(
     description: { type: String, default: '' },
     status: {
       type: String,
-      enum: ['New', 'Contacted', 'Profiles Shared', 'Closed'],
+      enum: ['New', 'In Review', 'Contacted', 'Profiles Shared', 'Closed'],
       default: 'New',
     },
+    notes: { type: String, default: '' },
+    priority: { type: String, enum: ['Normal', 'High', 'Urgent'], default: 'Normal' },
+    assignedTo: { type: String, default: 'Unassigned' },
     formattedDate: { type: String },
   },
   { timestamps: true }
