@@ -41,61 +41,23 @@ jobs:
           script: |
             set -euo pipefail
 
-            # Ensure cPanel Node.js 22 and standard system tools are in PATH
-            export PATH="/opt/cpanel/ea-nodejs22/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+            export PATH="/opt/cpanel/ea-nodejs22/bin:/opt/cpanel/ea-nodejs22/lib/node_modules/pm2/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 
-            PROJECT_DIR="/home/interski/interskillstaffingsolutions"
             DEPLOY_SCRIPT="/home/interski/bin/deploy-staffing.sh"
 
-            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting deployment workflow on host $(hostname)..."
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Connecting via SSH as user $(whoami) on host $(hostname)..."
 
-            if [ ! -d "$PROJECT_DIR" ]; then
-              echo "ERROR: Target directory $PROJECT_DIR not found on VPS." >&2
+            # Fail immediately if server deployment wrapper is missing or not executable
+            if [ ! -f "$DEPLOY_SCRIPT" ]; then
+              echo "ERROR: Server deployment wrapper '$DEPLOY_SCRIPT' not found." >&2
               exit 1
             fi
 
-            # Prefer the server administrator wrapper script if configured
-            if [ -x "$DEPLOY_SCRIPT" ]; then
-              echo "Executing server deployment wrapper: $DEPLOY_SCRIPT"
-              "$DEPLOY_SCRIPT"
-            elif [ -f "$PROJECT_DIR/scripts/deploy-staffing.sh" ]; then
-              echo "Executing repository deployment script: $PROJECT_DIR/scripts/deploy-staffing.sh"
-              chmod +x "$PROJECT_DIR/scripts/deploy-staffing.sh"
-              "$PROJECT_DIR/scripts/deploy-staffing.sh"
-            else
-              echo "Executing fallback deployment commands..."
-              cd "$PROJECT_DIR"
-              git fetch origin main
-              git merge --ff-only origin/main
-              /opt/cpanel/ea-nodejs22/bin/npm ci
-              /opt/cpanel/ea-nodejs22/bin/npm run build
-
-              # Reload ONLY interskill-staffing-api (never touch company website PM2 processes)
-              if pm2 describe interskill-staffing-api >/dev/null 2>&1; then
-                pm2 reload interskill-staffing-api --update-env
-              else
-                pm2 start server/server.js --name interskill-staffing-api --interpreter /opt/cpanel/ea-nodejs22/bin/node --update-env
-              fi
-              pm2 save 2>/dev/null || true
-
-              # Health check
-              echo "Verifying backend health on port 5001..."
-              HEALTHY=0
-              for i in {1..10}; do
-                if curl -s -f http://127.0.0.1:5001/api/health >/dev/null 2>&1; then
-                  HEALTHY=1
-                  break
-                fi
-                sleep 2
-              done
-
-              if [ "$HEALTHY" -eq 1 ]; then
-                echo "Health check succeeded: $(curl -s http://127.0.0.1:5001/api/health)"
-              else
-                echo "ERROR: Health check failed at http://127.0.0.1:5001/api/health" >&2
-                pm2 logs interskill-staffing-api --lines 25 --nostream >&2 || true
-                exit 1
-              fi
+            if [ ! -x "$DEPLOY_SCRIPT" ]; then
+              echo "ERROR: Server deployment wrapper '$DEPLOY_SCRIPT' is not marked executable." >&2
+              exit 1
             fi
 
-            echo "[$(date '+%Y-%m-%d %H:%M:%S')] VPS deployment finished successfully."
+            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Invoking server deployment wrapper: $DEPLOY_SCRIPT"
+            "$DEPLOY_SCRIPT"
+

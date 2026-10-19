@@ -9,10 +9,11 @@
 set -euo pipefail
 
 # Environment & Binary Configuration
-export PATH="/opt/cpanel/ea-nodejs22/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+export PATH="/opt/cpanel/ea-nodejs22/bin:/opt/cpanel/ea-nodejs22/lib/node_modules/pm2/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 PROJECT_DIR="/home/interski/interskillstaffingsolutions"
 NODE_BIN="/opt/cpanel/ea-nodejs22/bin/node"
 NPM_BIN="/opt/cpanel/ea-nodejs22/bin/npm"
+PM2_BIN="/opt/cpanel/ea-nodejs22/lib/node_modules/pm2/bin/pm2"
 PM2_APP_NAME="interskill-staffing-api"
 PORT="5001"
 HEALTH_URL="http://127.0.0.1:${PORT}/api/health"
@@ -85,23 +86,19 @@ if [ ! -d "dist" ] || [ ! -f "dist/index.html" ]; then
 fi
 log "Frontend build verified successfully."
 
-# 6. Reload or Start ONLY the Staffing Backend PM2 Process
-# (CRITICAL: Do NOT touch the existing company website 'interskillsolutions.com' or other processes)
-log "Managing PM2 process: $PM2_APP_NAME"
+# 6. Reload ONLY the Existing Staffing Backend PM2 Process
+log "Checking existing PM2 process: $PM2_APP_NAME"
 
-if pm2 describe "$PM2_APP_NAME" >/dev/null 2>&1; then
-  log "Reloading existing PM2 process '$PM2_APP_NAME' with updated environment..."
-  pm2 reload "$PM2_APP_NAME" --update-env
+if "$PM2_BIN" describe "$PM2_APP_NAME" >/dev/null 2>&1; then
+  log "Reloading existing PM2 process '$PM2_APP_NAME'..."
+  "$PM2_BIN" reload "$PM2_APP_NAME" --update-env
 else
-  log "Starting new PM2 process '$PM2_APP_NAME' on port $PORT..."
-  pm2 start server/server.js \
-    --name "$PM2_APP_NAME" \
-    --interpreter "$NODE_BIN" \
-    --update-env
+  log "ERROR: Existing PM2 process '$PM2_APP_NAME' was not found." >&2
+  exit 1
 fi
 
-# Save PM2 state for automatic reboot persistence
-pm2 save 2>/dev/null || true
+# Save PM2 state using the configured PM2 binary
+"$PM2_BIN" save
 
 # 7. Backend Health Verification
 log "Verifying backend health check at $HEALTH_URL..."
